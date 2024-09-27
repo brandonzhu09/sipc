@@ -41,7 +41,6 @@ expr : expr '(' (expr (',' expr)*)? ')' 	    #funAppExpr
      | '[' expr 'of' expr ']'                   #array2Constructor
      | expr '[' expr ']'                        #arrayRefExpr
      | '#' expr                                 #arrayPrefixLength
-     | expr op=(INC | DEC)                      #incDecExpr
      | expr '.' IDENTIFIER 			            #accessExpr
      | '-' expr                                 #negExpr
      | '!' expr                                 #notExpr
@@ -74,6 +73,8 @@ fieldExpr : IDENTIFIER ':' expr ;
 
 statement : blockStmt
     | assignStmt
+    | incrementStmt
+    | decrementStmt
     | whileStmt
     | forIterStmt
     | forRangeStmt
@@ -100,13 +101,15 @@ forIterStmt : KFOR '(' expr ':' expr ')' statement ;
 
 forRangeStmt : KFOR '(' expr ':' expr '..' expr ('by' expr)? ')' statement ;
 
+incrementStmt : expr '++' ;
+
+decrementStmt : expr '--' ;
+
 
 ////////////////////// TIP Lexicon ////////////////////////// 
 
 // By convention ANTLR4 lexical elements use all caps
 
-INC : '++' ;
-DEC : '--' ;
 MUL : '*' ;
 DIV : '/' ;
 MOD : '%' ;
