@@ -53,12 +53,12 @@ expr : expr '(' (expr (',' expr)*)? ')' 	    #funAppExpr
      | expr op=(ADD | SUB) expr 		        #additiveExpr
      | expr op=(GT | GTE | LT | LTE) expr 	    #relationalExpr
      | expr op=(EQ | NE) expr 			        #equalityExpr
-     | expr op=(AND | OR) expr                  #andOrExpr
+     | expr op=(KAND | KOR) expr                #andOrExpr
      | expr '?' expr ':' expr                   #ternaryExpr
      | IDENTIFIER				                #varExpr
      | NUMBER					                #numExpr
-     | TRUE                                     #trueExpr
-     | FALSE                                    #falseExpr
+     | KTRUE                                    #trueExpr
+     | KFALSE                                   #falseExpr
      | KINPUT					                #inputExpr
      | KALLOC expr				                #allocExpr
      | KNULL					                #nullExpr
@@ -106,7 +106,7 @@ forRangeStmt : KFOR '(' expr ':' expr '..' expr ('by' expr)? ')' statement ;
 // By convention ANTLR4 lexical elements use all caps
 
 INC : '++' ;
-DES : '--' ;
+DEC : '--' ;
 MUL : '*' ;
 DIV : '/' ;
 MOD : '%' ;
@@ -118,10 +118,6 @@ LT  : '<' ;
 LTE : '<=' ;
 EQ  : '==' ;
 NE  : '!=' ;
-AND : 'and' ;
-OR  : 'or' ;
-TRUE : 'true' ;
-FALSE : 'false' ;
 
 NUMBER : [0-9]+ ;
 
@@ -137,6 +133,11 @@ KRETURN : 'return' ;
 KNULL   : 'null' ;
 KOUTPUT : 'output' ;
 KERROR  : 'error' ;
+KAND : 'and' ;
+KOR  : 'or' ;
+KTRUE : 'true' ;
+KFALSE : 'false' ;
+KFOR : 'for' ;
 
 // Keyword to declare functions as polymorphic
 KPOLY   : 'poly' ;
