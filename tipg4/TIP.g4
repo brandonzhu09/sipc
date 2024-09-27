@@ -36,22 +36,34 @@ nameDeclaration : IDENTIFIER ;
 // issues elsewhere in the compiler, e.g.,  introducing an assignable expr
 // weeding pass. 
 //
-expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
-     | expr '.' IDENTIFIER 			#accessExpr
-     | '*' expr 				#deRefExpr
-     | SUB NUMBER				#negNumber
-     | '&' expr					#refExpr
-     | expr op=(MUL | DIV) expr 		#multiplicativeExpr
-     | expr op=(ADD | SUB) expr 		#additiveExpr
-     | expr op=GT expr 				#relationalExpr
-     | expr op=(EQ | NE) expr 			#equalityExpr
-     | IDENTIFIER				#varExpr
-     | NUMBER					#numExpr
-     | KINPUT					#inputExpr
-     | KALLOC expr				#allocExpr
-     | KNULL					#nullExpr
-     | recordExpr				#recordRule
-     | '(' expr ')'				#parenExpr
+expr : expr '(' (expr (',' expr)*)? ')' 	    #funAppExpr
+     | '[' (expr (',' expr)*)? ']'              #array1Constructor
+     | '[' expr 'of' expr ']'                   #array2Constructor
+     | expr '[' expr ']'                        #arrayRefExpr
+     | '#' expr                                 #arrayPrefixLength
+     | expr op=(INC | DEC)                      #incDecExpr
+     | expr '.' IDENTIFIER 			            #accessExpr
+     | '-' expr                                 #negExpr
+     | '!' expr                                 #notExpr
+     | 'not' expr                               #notUnaryExpr
+     | '*' expr 				                #deRefExpr
+     | SUB NUMBER				                #negNumber
+     | '&' expr					                #refExpr
+     | expr op=(MUL | DIV | MOD) expr 		    #multiplicativeExpr
+     | expr op=(ADD | SUB) expr 		        #additiveExpr
+     | expr op=(GT | GTE | LT | LTE) expr 	    #relationalExpr
+     | expr op=(EQ | NE) expr 			        #equalityExpr
+     | expr op=(AND | OR) expr                  #andOrExpr
+     | expr '?' expr ':' expr                   #ternaryExpr
+     | IDENTIFIER				                #varExpr
+     | NUMBER					                #numExpr
+     | TRUE                                     #trueExpr
+     | FALSE                                    #falseExpr
+     | KINPUT					                #inputExpr
+     | KALLOC expr				                #allocExpr
+     | KNULL					                #nullExpr
+     | recordExpr				                #recordRule
+     | '(' expr ')'				                #parenExpr
 ;
 
 recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;
@@ -63,6 +75,8 @@ fieldExpr : IDENTIFIER ':' expr ;
 statement : blockStmt
     | assignStmt
     | whileStmt
+    | forIterStmt
+    | forRangeStmt
     | ifStmt
     | outputStmt
     | errorStmt
@@ -82,18 +96,32 @@ errorStmt : KERROR expr ';'  ;
 
 returnStmt : KRETURN expr ';'  ;
 
+forIterStmt : KFOR '(' expr ':' expr ')' statement ;
+
+forRangeStmt : KFOR '(' expr ':' expr (',' expr)* ('by' expr)? ')' statement ;
+
 
 ////////////////////// TIP Lexicon ////////////////////////// 
 
 // By convention ANTLR4 lexical elements use all caps
 
+INC : '++' ;
+DES : '--' ;
 MUL : '*' ;
 DIV : '/' ;
+MOD : '%' ;
 ADD : '+' ;
 SUB : '-' ;
 GT  : '>' ;
+GTE : '>=' ;
+LT  : '<' ;
+LTE : '<=' ;
 EQ  : '==' ;
 NE  : '!=' ;
+AND : 'and' ;
+OR  : 'or' ;
+TRUE : 'true' ;
+FALSE : 'false' ;
 
 NUMBER : [0-9]+ ;
 
