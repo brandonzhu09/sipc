@@ -40,7 +40,6 @@ expr : expr '(' (expr (',' expr)*)? ')' 	    #funAppExpr
      | '[' (expr (',' expr)*)? ']'              #array1Constructor
      | '[' expr 'of' expr ']'                   #array2Constructor
      | expr '[' expr ']'                        #arrayRefExpr
-     | '#' expr                                 #arrayPrefixLength
      | expr '.' IDENTIFIER 			            #accessExpr
      | '-' expr                                 #negExpr
      | '!' expr                                 #notExpr
@@ -48,6 +47,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	    #funAppExpr
      | '*' expr 				                #deRefExpr
      | SUB NUMBER				                #negNumber
      | '&' expr					                #refExpr
+     | '#' expr                                 #arrayPrefixLength
      | expr op=(MUL | DIV | MOD) expr 		    #multiplicativeExpr
      | expr op=(ADD | SUB) expr 		        #additiveExpr
      | expr op=(GT | GTE | LT | LTE) expr 	    #relationalExpr
