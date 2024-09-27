@@ -62,7 +62,7 @@ TEST_CASE("SIP Parser: relational operators", "[TIP Parser]") {
         y = 2;
         output x >= y;
         output x < y;
-        output x < y;
+        output x <= y;
         return 0;
       }
     )";
@@ -135,7 +135,7 @@ TEST_CASE("SIP Parser: for range loop with optional increment", "[TIP Parser]") 
  * They access the parse tree and ensure that the higher precedence
  * operator is nested more deeply than the lower precedence operator.
  */
-TEST_CASE("TIP Parser: mod higher precedence than add", "[TIP Parser]") {
+TEST_CASE("SIP Parser: mod higher precedence than add", "[TIP Parser]") {
   std::stringstream stream;
   stream << R"(main() { return 1 + 2 % 3; })";
   std::string expected = "(expr (expr 1) + (expr (expr 2) % (expr 3)))";
@@ -143,7 +143,7 @@ TEST_CASE("TIP Parser: mod higher precedence than add", "[TIP Parser]") {
   REQUIRE(tree.find(expected) != std::string::npos);
 }
 
-TEST_CASE("TIP Parser: not higher precedence than and/or", "[TIP Parser]") {
+TEST_CASE("SIP Parser: not higher precedence than and/or", "[TIP Parser]") {
   std::stringstream stream;
   stream << R"(main() { return not true or false; })";
   std::string expected = "(expr (expr not (expr true)) or (expr false))";
@@ -151,29 +151,44 @@ TEST_CASE("TIP Parser: not higher precedence than and/or", "[TIP Parser]") {
   REQUIRE(tree.find(expected) != std::string::npos);
 }
 
-
-TEST_CASE("SIP Parser: test1", "[TIP Parser]") {
+/************ The following are expected to fail parsing ************/
+TEST_CASE("SIP Parser: incorrect increment statement", "[TIP Parser]") {
   std::stringstream stream;
   stream << R"(
-      arrays() {
-        var x;
-        x---;
-        return 0;
-      }
+      main() { var x; x+++; return 0; }
     )";
 
-  REQUIRE(ParserHelper::is_parsable(stream));
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("SIP Parser: test2", "[TIP Parser]") {
+TEST_CASE("SIP Parser: missing bracket in list", "[TIP Parser]") {
   std::stringstream stream;
   stream << R"(
-      arrays() {
+      main() { var x; x = [1, 2, 3; return 0; }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: bad field separator in list", "[TIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; x = [1 2 3]; return 0; }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: missing colon in for loop", "[TIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      main() {
         var x;
-        x ++ ;
+        x = [1, 2, 3];
+        for (i x) output i;
         return 0;
       }
     )";
 
-  REQUIRE(ParserHelper::is_parsable(stream));
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
