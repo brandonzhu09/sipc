@@ -21,6 +21,19 @@ TEST_CASE("SIP Parser: boolean constants and binary operators", "[TIP Parser]") 
     REQUIRE(ParserHelper::is_parsable(stream));
 }
 
+TEST_CASE("SIP Parser: ternary expression", "[TIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      main() {
+        var x;
+        x = (2 >= 1) ? 1 : 0;
+        return 0;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
 TEST_CASE("SIP Parser: array construction, length and element reference", "[TIP Parser]") {
     std::stringstream stream;
     stream << R"(
@@ -64,19 +77,6 @@ TEST_CASE("SIP Parser: relational operators", "[TIP Parser]") {
         output x < y;
         output x <= y;
         return 0;
-      }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-// TODO:
-TEST_CASE("SIP Parser: ternary condition expression", "[TIP Parser]") {
-  std::stringstream stream;
-  stream << R"(
-      main() {
-        var x;
-         return 0;
       }
     )";
 
@@ -156,6 +156,19 @@ TEST_CASE("SIP Parser: incorrect increment statement", "[TIP Parser]") {
   std::stringstream stream;
   stream << R"(
       main() { var x; x+++; return 0; }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: bad assignment in ternary expression", "[TIP Parser]") {
+  std::stringstream stream;
+  stream << R"(
+      main() {
+          var x;
+          x = (2 >= 1) ? x = 1 : x = 0;
+          return 0;
+      }
     )";
 
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
