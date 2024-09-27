@@ -101,9 +101,9 @@ forIterStmt : KFOR '(' expr ':' expr ')' statement ;
 
 forRangeStmt : KFOR '(' expr ':' expr '..' expr ('by' expr)? ')' statement ;
 
-incrementStmt : expr '++' ;
+incrementStmt : expr '++' ';' ;
 
-decrementStmt : expr '--' ;
+decrementStmt : expr '--' ';' ;
 
 
 ////////////////////// TIP Lexicon ////////////////////////// 
