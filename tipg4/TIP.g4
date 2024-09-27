@@ -98,7 +98,7 @@ returnStmt : KRETURN expr ';'  ;
 
 forIterStmt : KFOR '(' expr ':' expr ')' statement ;
 
-forRangeStmt : KFOR '(' expr ':' expr (',' expr)* ('by' expr)? ')' statement ;
+forRangeStmt : KFOR '(' expr ':' expr '..' expr ('by' expr)? ')' statement ;
 
 
 ////////////////////// TIP Lexicon ////////////////////////// 
