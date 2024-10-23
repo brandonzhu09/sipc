@@ -52,6 +52,8 @@ public:
   virtual void endVisit(ASTAccessExpr *element) {}
   virtual bool visit(ASTDeclNode *element) { return true; }
   virtual void endVisit(ASTDeclNode *element) {}
+  virtual bool visit(ASTBooleanExpr *element) { return true; }
+  virtual void endVisit(ASTBooleanExpr *element) {}
   virtual bool visit(ASTDeclStmt *element) { return true; }
   virtual void endVisit(ASTDeclStmt *element) {}
   virtual bool visit(ASTAssignStmt *element) { return true; }

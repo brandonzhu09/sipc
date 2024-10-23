@@ -1,4 +1,21 @@
-add_library(ast)
+add_library(ast
+        treetypes/ASTBooleanExpr.h
+        treetypes/ASTBooleanExpr.cpp
+        treetypes/ASTNotExpr.h
+        treetypes/ASTNotExpr.cpp
+        treetypes/ASTIncrementStmt.h
+        treetypes/ASTIncrementStmt.cpp
+        treetypes/ASTTernaryExpr.h
+        treetypes/ASTTernaryExpr.cpp
+        treetypes/ASTArrayExpr.h
+        treetypes/ASTArrayExpr.cpp
+        treetypes/ASTArrayRefExpr.h
+        treetypes/ASTArrayRefExpr.cpp
+        treetypes/ASTForStmt.h
+        treetypes/ASTForStmt.cpp
+        treetypes/ASTForRangeStmt.h
+        treetypes/ASTForRangeStmt.cpp
+)
 target_sources(
   ast
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/ASTBuilder.cpp
