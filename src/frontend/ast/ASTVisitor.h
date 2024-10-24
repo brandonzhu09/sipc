@@ -54,6 +54,14 @@ public:
   virtual void endVisit(ASTDeclNode *element) {}
   virtual bool visit(ASTBooleanExpr *element) { return true; }
   virtual void endVisit(ASTBooleanExpr *element) {}
+  virtual bool visit(ASTTernaryExpr *element) { return true; }
+  virtual void endVisit(ASTTernaryExpr *element) {}
+  virtual bool visit(ASTArrayExpr *element) { return true; }
+  virtual void endVisit(ASTArrayExpr *element) {}
+  virtual bool visit(ASTArrayRefExpr *element) { return true; }
+  virtual void endVisit(ASTArrayRefExpr *element) {}
+  virtual bool visit(ASTUnaryExpr *element) { return true; }
+  virtual void endVisit(ASTUnaryExpr *element) {}
   virtual bool visit(ASTDeclStmt *element) { return true; }
   virtual void endVisit(ASTDeclStmt *element) {}
   virtual bool visit(ASTAssignStmt *element) { return true; }
@@ -70,4 +78,12 @@ public:
   virtual void endVisit(ASTErrorStmt *element) {}
   virtual bool visit(ASTBlockStmt *element) { return true; }
   virtual void endVisit(ASTBlockStmt *element) {}
+  virtual bool visit(ASTIncrementStmt *element) { return true; }
+  virtual void endVisit(ASTIncrementStmt *element) {}
+  virtual bool visit(ASTDecrementStmt *element) { return true; }
+  virtual void endVisit(ASTDecrementStmt *element) {}
+  virtual bool visit(ASTForStmt *element) { return true; }
+  virtual void endVisit(ASTForStmt *element) {}
+  virtual bool visit(ASTForRangeStmt *element) { return true; }
+  virtual void endVisit(ASTForRangeStmt *element) {}
 };

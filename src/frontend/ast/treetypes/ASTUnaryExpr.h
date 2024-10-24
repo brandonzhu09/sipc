@@ -4,12 +4,12 @@
 
 /*! \brief Class for applying unary not operator on an expression
  */
-class ASTNotExpr : public ASTExpr {
+class ASTUnaryExpr : public ASTExpr {
     std::shared_ptr<ASTExpr> EXPR;
 
 public:
     std::vector<std::shared_ptr<ASTNode>> getChildren() override;
-    ASTNotExpr(std::shared_ptr<ASTExpr> EXPR) : EXPR(EXPR) {}
+    ASTUnaryExpr(std::shared_ptr<ASTExpr> EXPR) : EXPR(EXPR) {}
     ASTExpr *getExpr() const { return EXPR.get(); }
     void accept(ASTVisitor *visitor) override;
     llvm::Value *codegen() override;

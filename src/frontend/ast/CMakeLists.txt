@@ -1,8 +1,6 @@
 add_library(ast
         treetypes/ASTBooleanExpr.h
         treetypes/ASTBooleanExpr.cpp
-        treetypes/ASTNotExpr.h
-        treetypes/ASTNotExpr.cpp
         treetypes/ASTIncrementStmt.h
         treetypes/ASTIncrementStmt.cpp
         treetypes/ASTTernaryExpr.h
@@ -15,6 +13,10 @@ add_library(ast
         treetypes/ASTForStmt.cpp
         treetypes/ASTForRangeStmt.h
         treetypes/ASTForRangeStmt.cpp
+        treetypes/ASTUnaryExpr.h
+        treetypes/ASTUnaryExpr.cpp
+        treetypes/ASTDecrementStmt.h
+        treetypes/ASTDecrementStmt.cpp
 )
 target_sources(
   ast

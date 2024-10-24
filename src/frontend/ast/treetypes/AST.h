@@ -34,4 +34,13 @@
 #include "ASTStmt.h"
 #include "ASTVariableExpr.h"
 #include "ASTWhileStmt.h"
+
 #include "ASTBooleanExpr.h"
+#include "ASTIncrementStmt.h"
+#include "ASTTernaryExpr.h"
+#include "ASTArrayExpr.h"
+#include "ASTArrayRefExpr.h"
+#include "ASTForStmt.h"
+#include "ASTForRangeStmt.h"
+#include "ASTUnaryExpr.h"
+#include "ASTDecrementStmt.h"
