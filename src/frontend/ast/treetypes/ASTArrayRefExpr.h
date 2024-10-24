@@ -2,7 +2,7 @@
 
 #include "ASTExpr.h"
 
-/*! \brief Class for referencing the address of an expression.
+/*! \brief Class for referencing an element in the array
  */
 class ASTArrayRefExpr : public ASTExpr {
     std::shared_ptr<ASTExpr> ARRAY;
