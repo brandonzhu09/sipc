@@ -533,7 +533,20 @@ Any ASTBuilder::visitArrayConstructor(TIPParser::ArrayConstructorContext *ctx) {
                            ctx->getStart()->getCharPositionInLine());
   return "";
 };
-Any ASTBuilder::visitArrayOfConstructor(TIPParser::ArrayOfConstructorContext *ctx) {} ;
+Any ASTBuilder::visitArrayOfConstructor(TIPParser::ArrayOfConstructorContext *ctx) {
+  visit(ctx->expr(0));
+  auto frequency = visitedExpr;
+  visit(ctx->expr(1));
+  auto element = visitedExpr;
+  visitedExpr = std::make_shared<ASTArrayOfExpr>(frequency, element);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+} ;
 Any ASTBuilder::visitArrayRefExpr(TIPParser::ArrayRefExprContext *ctx) {
   visit(ctx->expr(0));
   auto array = visitedExpr;

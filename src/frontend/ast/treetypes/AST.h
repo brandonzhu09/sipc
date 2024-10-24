@@ -39,6 +39,7 @@
 #include "ASTIncrementStmt.h"
 #include "ASTTernaryExpr.h"
 #include "ASTArrayExpr.h"
+#include "ASTArrayOfExpr.h"
 #include "ASTArrayRefExpr.h"
 #include "ASTForStmt.h"
 #include "ASTForRangeStmt.h"

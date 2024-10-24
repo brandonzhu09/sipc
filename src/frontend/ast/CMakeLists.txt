@@ -17,6 +17,8 @@ add_library(ast
         treetypes/ASTUnaryExpr.cpp
         treetypes/ASTDecrementStmt.h
         treetypes/ASTDecrementStmt.cpp
+        treetypes/ASTArrayOfExpr.h
+        treetypes/ASTArrayOfExpr.cpp
 )
 target_sources(
   ast
