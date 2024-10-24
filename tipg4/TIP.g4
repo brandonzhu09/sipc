@@ -37,13 +37,12 @@ nameDeclaration : IDENTIFIER ;
 // weeding pass. 
 //
 expr : expr '(' (expr (',' expr)*)? ')' 	    #funAppExpr
-     | '[' (expr (',' expr)*)? ']'              #array1Constructor
-     | '[' expr 'of' expr ']'                   #array2Constructor
+     | '[' (expr (',' expr)*)? ']'              #arrayConstructor
+     | '[' expr 'of' expr ']'                   #arrayOfConstructor
      | expr '[' expr ']'                        #arrayRefExpr
      | expr '.' IDENTIFIER 			            #accessExpr
      | '-' expr                                 #negExpr
-     | '!' expr                                 #notExpr
-     | 'not' expr                               #notUnaryExpr
+     | 'not' expr                               #notExpr
      | '*' expr 				                #deRefExpr
      | SUB NUMBER				                #negNumber
      | '&' expr					                #refExpr
@@ -76,7 +75,7 @@ statement : blockStmt
     | incrementStmt
     | decrementStmt
     | whileStmt
-    | forIterStmt
+    | forStmt
     | forRangeStmt
     | ifStmt
     | outputStmt
@@ -97,7 +96,7 @@ errorStmt : KERROR expr ';'  ;
 
 returnStmt : KRETURN expr ';'  ;
 
-forIterStmt : KFOR '(' expr ':' expr ')' statement ;
+forStmt : KFOR '(' expr ':' expr ')' statement ;
 
 forRangeStmt : KFOR '(' expr ':' expr '..' expr ('by' expr)? ')' statement ;
 

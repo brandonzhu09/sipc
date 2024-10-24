@@ -9,12 +9,12 @@ class ASTForRangeStmt : public ASTStmt {
     std::shared_ptr<ASTExpr> ELEMENT;
     std::shared_ptr<ASTExpr> START;
     std::shared_ptr<ASTExpr> END;
-    std::shared_ptr<ASTExpr> INCREMENT = std::make_shared<ASTExpr>(1);
+    std::shared_ptr<ASTExpr> INCREMENT;
     std::shared_ptr<ASTStmt> BODY;
 
 public:
     std::vector<std::shared_ptr<ASTNode>> getChildren() override;
-    ASTForStmt(std::shared_ptr<ASTExpr> ELEMENT, std::shared_ptr<ASTExpr> START, std::shared_ptr<ASTExpr> END, std::shared_ptr<ASTExpr> INCREMENT, std::shared_ptr<ASTStmt> BODY)
+    ASTForRangeStmt(std::shared_ptr<ASTExpr> ELEMENT, std::shared_ptr<ASTExpr> START, std::shared_ptr<ASTExpr> END, std::shared_ptr<ASTExpr> INCREMENT, std::shared_ptr<ASTStmt> BODY)
         : ELEMENT(ELEMENT), START(START), END(END), INCREMENT(INCREMENT), BODY(BODY) {}
     ASTExpr *getElement() const { return ELEMENT.get(); }
     ASTExpr *getStart() const { return START.get(); }

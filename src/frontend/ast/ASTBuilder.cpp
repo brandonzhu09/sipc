@@ -498,3 +498,37 @@ std::string ASTBuilder::generateSHA256(std::string tohash) {
   picosha2::hash256(tohash.begin(), tohash.end(), hash.begin(), hash.end());
   return picosha2::bytes_to_hex_string(hash.begin(), hash.end());
 }
+
+Any ASTBuilder::visitArrayConstructor(TIPParser::ArrayConstructorContext *ctx) {};
+Any ASTBuilder::visitArrayOfConstructor(TIPParser::ArrayOfConstructorContext *ctx) {} ;
+Any ASTBuilder::visitArrayRefExpr(TIPParser::ArrayRefExprContext *ctx) {};
+Any ASTBuilder::visitNegExpr(TIPParser::NegExprContext *ctx) {};
+Any ASTBuilder::visitNotExpr(TIPParser::NotExprContext *ctx) {};
+Any ASTBuilder::visitArrayPrefixLength(TIPParser::ArrayPrefixLengthContext *ctx) {};
+Any ASTBuilder::visitAndOrExpr(TIPParser::AndOrExprContext *ctx) {};
+Any ASTBuilder::visitTrueExpr(TIPParser::TrueExprContext *ctx) {
+  std::string val = ctx->KTRUE()->getText();
+  visitedExpr = std::make_shared<ASTBooleanExpr>(val);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+};
+Any ASTBuilder::visitFalseExpr(TIPParser::FalseExprContext *ctx) {
+  std::string val = ctx->KFALSE()->getText();
+  visitedExpr = std::make_shared<ASTBooleanExpr>(val);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+};
+Any ASTBuilder::visitForStmt(TIPParser::ForStmtContext *ctx) {};
+Any ASTBuilder::visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) {};
+Any ASTBuilder::visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) {};
+Any ASTBuilder::visitDecrementStmt(TIPParser::DecrementStmtContext *ctx) {};
