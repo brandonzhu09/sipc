@@ -55,6 +55,19 @@ public:
   virtual void endVisit(ASTReturnStmt *element) override;
   virtual void endVisit(ASTErrorStmt *element) override;
 
+  virtual void endVisit(ASTArrayExpr *element) override;
+  virtual void endVisit(ASTArrayOfExpr *element) override;
+  virtual void endVisit(ASTBooleanExpr *element) override;
+  virtual bool visit(ASTForStmt *element) override;
+  virtual void endVisit(ASTForStmt *element) override;
+  virtual bool visit(ASTForRangeStmt *element) override;
+  virtual void endVisit(ASTForRangeStmt *element) override;
+  virtual void endVisit(ASTIncrementStmt *element) override;
+  virtual void endVisit(ASTDecrementStmt *element) override;
+  virtual void endVisit(ASTUnaryExpr *element) override;
+  virtual void endVisit(ASTTernaryExpr *element) override;
+  virtual void endVisit(ASTArrayRefExpr *element) override;
+
 private:
   std::string indent() const;
   int indentLevel = 0;
