@@ -283,7 +283,7 @@ TEST_CASE("PrettyPrinter: Test SIP statements and expressions", "[PrettyPrinter]
 
 TEST_CASE("PrettyPrinter: Test for loop spacing", "[PrettyPrinter]") {
   std::stringstream stream;
-  stream << R"(prog(){var x,y,z;for(z : y){x=x+z;}return x;})";
+  stream << R"(prog(){var x,y,z;for(z:y){x=x+z;}return x;})";
 
   std::string expected = R"(prog()
 {
@@ -299,7 +299,7 @@ TEST_CASE("PrettyPrinter: Test for loop spacing", "[PrettyPrinter]") {
   std::stringstream pp;
   auto ast = ASTHelper::build_ast(stream);
   PrettyPrinter::print(ast.get(), pp, ' ', 2);
-  // std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
-  // expected = GeneralHelper::removeTrailingWhitespace(expected);
-  // REQUIRE(ppString == expected);
+   std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+   expected = GeneralHelper::removeTrailingWhitespace(expected);
+   REQUIRE(ppString == expected);
 }

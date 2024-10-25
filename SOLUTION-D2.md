@@ -4,3 +4,5 @@
 - Writing PrettyPrinter tests was challenging as I needed to figure out how the PrettyPrinter actually formats the code (including parenthesis over expressions and code blocks) so it lines up with the expected string.
 
 My approach to testing and achieving high code coverage is by figuring out what methods get called in the ASTNodes for each of the compiler phases and ensure that those methods are being called for every ASTNode subtype that I have created. I would also run the code coverage in isolation, testing just one ASTNode to figure out how to complete coverage for the rest of them.
+
+**Important: Professor Dwyer said in a Piazza post that I can choose the step (2) where I plan to write system tests with my SIP features later. My plan is to complete the coverage of getChildren() methods in the new ASTNode subtypes by implementing methods in the ASTNodeTests to cover those methods. 

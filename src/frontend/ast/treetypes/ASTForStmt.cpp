@@ -5,6 +5,7 @@ void ASTForStmt::accept(ASTVisitor *visitor) {
     if (visitor->visit(this)) {
         getElement()->accept(visitor);
         getIter()->accept(visitor);
+        getBody()->accept(visitor);
     }
     visitor->endVisit(this);
 }
