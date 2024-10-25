@@ -562,8 +562,9 @@ Any ASTBuilder::visitArrayRefExpr(TIPParser::ArrayRefExprContext *ctx) {
   return "";
 };
 Any ASTBuilder::visitNegExpr(TIPParser::NegExprContext *ctx) {
+
   visit(ctx->expr());
-  visitedExpr = std::make_shared<ASTUnaryExpr>(visitedExpr);
+  visitedExpr = std::make_shared<ASTUnaryExpr>("-", visitedExpr);
 
   LOG_S(1) << "Built AST node " << *visitedExpr;
 
@@ -574,7 +575,7 @@ Any ASTBuilder::visitNegExpr(TIPParser::NegExprContext *ctx) {
 };
 Any ASTBuilder::visitNotExpr(TIPParser::NotExprContext *ctx) {
   visit(ctx->expr());
-  visitedExpr = std::make_shared<ASTUnaryExpr>(visitedExpr);
+  visitedExpr = std::make_shared<ASTUnaryExpr>("not", visitedExpr);
 
   LOG_S(1) << "Built AST node " << *visitedExpr;
 
@@ -585,7 +586,7 @@ Any ASTBuilder::visitNotExpr(TIPParser::NotExprContext *ctx) {
 };
 Any ASTBuilder::visitArrayPrefixLength(TIPParser::ArrayPrefixLengthContext *ctx) {
   visit(ctx->expr());
-  visitedExpr = std::make_shared<ASTUnaryExpr>(visitedExpr);
+  visitedExpr = std::make_shared<ASTUnaryExpr>("#", visitedExpr);
 
   LOG_S(1) << "Built AST node " << *visitedExpr;
 

@@ -249,3 +249,107 @@ void PrettyPrinter::endVisit(ASTReturnStmt *element) {
 std::string PrettyPrinter::indent() const {
   return std::string(indentLevel * indentSize, indentChar);
 }
+
+void PrettyPrinter::endVisit(ASTArrayExpr *element) {
+  std::string array = "[";
+  for (int i=0; i<element->getElements().size(); i++) {
+    if (i == element->getElements().size()-1) {
+      array += visitResults.back();
+    }
+    else {
+      array += visitResults.back() + ", ";
+    }
+  }
+  array += "]";
+  visitResults.push_back(array);
+};
+void PrettyPrinter::endVisit(ASTArrayOfExpr *element) {
+  std::string arrayElement = visitResults.back();
+  visitResults.pop_back();
+  std::string frequency = visitResults.back();
+  visitResults.pop_back();
+  visitResults.push_back("[" + frequency + " of " + arrayElement + "]");
+};
+void PrettyPrinter::endVisit(ASTBooleanExpr *element) {
+  visitResults.push_back(element->getValue());
+};
+bool PrettyPrinter::visit(ASTForStmt *element) {
+  indentLevel++;
+  return true;
+};
+void PrettyPrinter::endVisit(ASTForStmt *element) {
+  indentLevel--;
+  std::string body = visitResults.back();
+  visitResults.pop_back();
+  std::string iterator = visitResults.back();
+  visitResults.pop_back();
+  std::string arrayElement = visitResults.back();
+  visitResults.pop_back();
+  visitResults.push_back(
+      indent() + "for (" + arrayElement + " : " + iterator + ") {\n" +
+      body +
+      indent() + "}");
+};
+bool PrettyPrinter::visit(ASTForRangeStmt *element) {
+  indentLevel++;
+  return true;
+};
+void PrettyPrinter::endVisit(ASTForRangeStmt *element) {
+  std::string increment;
+  std::string body = visitResults.back();
+  visitResults.pop_back();
+  if (element->getIncrement() != nullptr) {
+    increment = visitResults.back();
+    visitResults.pop_back();
+  }
+  std::string end = visitResults.back();
+  visitResults.pop_back();
+  std::string start = visitResults.back();
+  visitResults.pop_back();
+  std::string arrayElement = visitResults.back();
+  visitResults.pop_back();
+  if (element->getIncrement() != nullptr) {
+    visitResults.push_back(
+      indent() + "for (" + arrayElement + " : " + start + " .. " + end + " by " + increment + ") {\n" +
+      body +
+      indent() + "}");
+  }
+  else {
+    visitResults.push_back(
+      indent() + "for (" + arrayElement + " : " + start + " .. " + end + ") {\n" +
+      body +
+      indent() + "}");
+  }
+
+};
+void PrettyPrinter::endVisit(ASTIncrementStmt *element) {
+  std::string expression = visitResults.back();
+  visitResults.pop_back();
+  visitResults.push_back(expression + "++");
+};
+void PrettyPrinter::endVisit(ASTDecrementStmt *element) {
+  std::string expression = visitResults.back();
+  visitResults.pop_back();
+  visitResults.push_back(expression + "--");
+};
+void PrettyPrinter::endVisit(ASTUnaryExpr *element) {
+  std::string expression = visitResults.back();
+  visitResults.pop_back();
+  visitResults.push_back(element->getOp() + expression);
+};
+void PrettyPrinter::endVisit(ASTTernaryExpr *element) {
+  std::string elseExpr = visitResults.back();
+  visitResults.pop_back();
+  std::string then = visitResults.back();
+  visitResults.pop_back();
+  std::string cond = visitResults.back();
+  visitResults.pop_back();
+  visitResults.push_back(cond + " ? " + then + " : " + elseExpr);
+};
+void PrettyPrinter::endVisit(ASTArrayRefExpr *element) {
+  std::string index = visitResults.back();
+  visitResults.pop_back();
+  std::string array = visitResults.back();
+  visitResults.pop_back();
+  visitResults.push_back(array + "[" + index + "]");
+};

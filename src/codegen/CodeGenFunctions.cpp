@@ -1054,3 +1054,48 @@ llvm::Value *ASTReturnStmt::codegen() {
   llvm::Value *argVal = getArg()->codegen();
   return irBuilder.CreateRet(argVal);
 }
+
+llvm::Value *ASTArrayExpr::codegen() {
+  // TODO: Implement the code generation logic for this method
+  return nullptr;
+}
+
+llvm::Value *ASTBooleanExpr::codegen() {
+  // TODO: Implement the code generation logic for this method
+  return nullptr;
+}
+
+llvm::Value *ASTArrayOfExpr::codegen() {
+  // TODO: Implement the code generation logic for this method
+  return nullptr;
+}
+
+llvm::Value *ASTArrayRefExpr::codegen() {
+  // TODO: Implement the code generation logic for this method
+  return nullptr;
+}
+
+llvm::Value *ASTIncrementStmt::codegen() {
+  // TODO: Implement the code generation logic for this method
+  return nullptr;
+}
+
+llvm::Value *ASTDecrementStmt::codegen() {
+  // TODO: Implement the code generation logic for this method
+  return nullptr;
+}
+
+llvm::Value *ASTForStmt::codegen() {
+  // TODO: Implement the code generation logic for this method
+  return nullptr;
+}
+
+llvm::Value *ASTForRangeStmt::codegen() {
+  // TODO: Implement the code generation logic for this method
+  return nullptr;
+}
+
+llvm::Value *ASTUnaryExpr::codegen() {
+  // TODO: Implement the code generation logic for this method
+  return nullptr;
+}
