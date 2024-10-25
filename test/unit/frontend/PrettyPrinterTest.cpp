@@ -283,12 +283,16 @@ TEST_CASE("PrettyPrinter: Test SIP statements and expressions", "[PrettyPrinter]
 
 TEST_CASE("PrettyPrinter: Test for loop spacing", "[PrettyPrinter]") {
   std::stringstream stream;
-  stream << R"(prog(){var x,y,z;for(z:y){x=x+z;}return x;})";
+  stream << R"(prog(){var x,y,z;for(z:y){x=x+z;}for(z:1..3 by 2){x=x+z;}return x;})";
 
   std::string expected = R"(prog()
 {
   var x, y, z;
   for (z : y)
+    {
+      x = (x + z);
+    }
+  for (z : 1 .. 3 by 2)
     {
       x = (x + z);
     }

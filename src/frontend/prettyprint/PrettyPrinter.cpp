@@ -301,11 +301,17 @@ void PrettyPrinter::endVisit(ASTForRangeStmt *element) {
   visitResults.pop_back();
   std::string arrayElement = visitResults.back();
   visitResults.pop_back();
+
+  indentLevel--;
+
+  std::string forRangeString;
   if (element->getIncrement() != nullptr) {
-    visitResults.push_back(indent() + "for (" + arrayElement + " : " + start + " .. " + end + " by " + increment + ") \n" + body);
+    forRangeString = indent() + "for (" + arrayElement + " : " + start + " .. " + end + " by " + increment + ") \n" + body;
+    visitResults.push_back(forRangeString);
   }
   else {
-    visitResults.push_back(indent() + "for (" + arrayElement + " : " + start + " .. " + end + ") \n" + body);
+    forRangeString = indent() + "for (" + arrayElement + " : " + start + " .. " + end + ") \n" + body;
+    visitResults.push_back(forRangeString);
   }
 
 };
