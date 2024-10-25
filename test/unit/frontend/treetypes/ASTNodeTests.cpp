@@ -448,3 +448,35 @@ TEST_CASE("ASTWhileStmtTest: Test methods of AST subtype.",
     o2 << *stmt->getBody();
     REQUIRE(o2.str() == "{ x = (x-1); }");
 }
+
+TEST_CASE("ASTBooleanExprTest: Test methods of AST subtype.",
+          "[ASTNodes]") {
+    std::stringstream stream;
+    stream << R"(
+      foo() {
+         return true;
+      }
+    )";
+
+    auto ast = ASTHelper::build_ast(stream);
+    auto expr = ASTHelper::find_node<ASTBooleanExpr>(ast);
+
+    REQUIRE(expr != nullptr);
+}
+
+TEST_CASE("ASTIncrementStmtTest: Test methods of AST subtype.",
+          "[ASTNodes]") {
+    std::stringstream stream;
+    stream << R"(
+      foo() {
+         var x;
+         x++;
+         return 0;
+      }
+    )";
+
+    auto ast = ASTHelper::build_ast(stream);
+    auto expr = ASTHelper::find_node<ASTIncrementStmt>(ast);
+
+    REQUIRE(expr != nullptr);
+}
