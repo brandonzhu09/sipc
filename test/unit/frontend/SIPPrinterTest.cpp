@@ -13,7 +13,7 @@ TEST_CASE("ASTPrinterTest: SIP expression printers", "[ASTNodePrint]") {
         z = [2 of 3];
         y = z[1];
         y = y % 3;
-        y = y + #z;
+        y = y + #z + -3;
         x = not x and (y == 2) or false;
         y = y ? x : -y;
         return y;
@@ -24,7 +24,7 @@ TEST_CASE("ASTPrinterTest: SIP expression printers", "[ASTNodePrint]") {
                                       "[2 of 3]",
                                       "z[1]",
                                       "(y%3)",
-                                      "(y+#z)",
+                                      "((y+#z)+-3)",
                                       "((notxand(y==2))orfalse)",
                                       "y ? x : -y"};
 

@@ -251,17 +251,9 @@ std::string PrettyPrinter::indent() const {
 }
 
 void PrettyPrinter::endVisit(ASTArrayExpr *element) {
-  std::string array = "[";
-  for (int i=0; i<element->getElements().size(); i++) {
-    if (i == element->getElements().size()-1) {
-      array += visitResults.back();
-    }
-    else {
-      array += visitResults.back() + ", ";
-    }
-  }
-  array += "]";
-  visitResults.push_back(array);
+  visitResults.push_back(
+      "[" + joinWithDelim(visitResults, ", ", element->getElements().size(), 1) +
+      "]");
 };
 void PrettyPrinter::endVisit(ASTArrayOfExpr *element) {
   std::string arrayElement = visitResults.back();
@@ -278,18 +270,19 @@ bool PrettyPrinter::visit(ASTForStmt *element) {
   return true;
 };
 void PrettyPrinter::endVisit(ASTForStmt *element) {
-  indentLevel--;
   std::string body = visitResults.back();
   visitResults.pop_back();
   std::string iterator = visitResults.back();
   visitResults.pop_back();
   std::string arrayElement = visitResults.back();
   visitResults.pop_back();
-  visitResults.push_back(
-      indent() + "for (" + arrayElement + " : " + iterator + ") {\n" +
-      body +
-      indent() + "}");
-};
+
+  indentLevel--;
+
+  std::string forString = indent() + "for (" + arrayElement + " : " + iterator + ") \n" + body;
+  visitResults.push_back(forString);
+}
+
 bool PrettyPrinter::visit(ASTForRangeStmt *element) {
   indentLevel++;
   return true;
@@ -309,28 +302,22 @@ void PrettyPrinter::endVisit(ASTForRangeStmt *element) {
   std::string arrayElement = visitResults.back();
   visitResults.pop_back();
   if (element->getIncrement() != nullptr) {
-    visitResults.push_back(
-      indent() + "for (" + arrayElement + " : " + start + " .. " + end + " by " + increment + ") {\n" +
-      body +
-      indent() + "}");
+    visitResults.push_back(indent() + "for (" + arrayElement + " : " + start + " .. " + end + " by " + increment + ") \n" + body);
   }
   else {
-    visitResults.push_back(
-      indent() + "for (" + arrayElement + " : " + start + " .. " + end + ") {\n" +
-      body +
-      indent() + "}");
+    visitResults.push_back(indent() + "for (" + arrayElement + " : " + start + " .. " + end + ") \n" + body);
   }
 
 };
 void PrettyPrinter::endVisit(ASTIncrementStmt *element) {
   std::string expression = visitResults.back();
   visitResults.pop_back();
-  visitResults.push_back(expression + "++");
+  visitResults.push_back(indent() + expression + "++;");
 };
 void PrettyPrinter::endVisit(ASTDecrementStmt *element) {
   std::string expression = visitResults.back();
   visitResults.pop_back();
-  visitResults.push_back(expression + "--");
+  visitResults.push_back(indent() + expression + "--;");
 };
 void PrettyPrinter::endVisit(ASTUnaryExpr *element) {
   std::string expression = visitResults.back();
