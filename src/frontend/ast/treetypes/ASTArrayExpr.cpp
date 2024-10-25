@@ -34,7 +34,7 @@ std::ostream &ASTArrayExpr::print(std::ostream &out) const {
         }
         out << "," << *e;
     }
-    out << "}";
+    out << "]";
     return out;
 } // LCOV_EXCL_LINE
 

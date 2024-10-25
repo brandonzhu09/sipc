@@ -1099,3 +1099,8 @@ llvm::Value *ASTUnaryExpr::codegen() {
   // TODO: Implement the code generation logic for this method
   return nullptr;
 }
+
+llvm::Value *ASTTernaryExpr::codegen() {
+  // TODO: Implement the code generation logic for this method
+  return nullptr;
+}

@@ -71,6 +71,7 @@ public:
   Any visitArrayConstructor(TIPParser::ArrayConstructorContext *ctx) override;
   Any visitArrayOfConstructor(TIPParser::ArrayOfConstructorContext *ctx) override;
   Any visitArrayRefExpr(TIPParser::ArrayRefExprContext *ctx) override;
+  Any visitTernaryExpr(TIPParser::TernaryExprContext *ctx) override;
   Any visitNegExpr(TIPParser::NegExprContext *ctx) override;
   Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
   Any visitArrayPrefixLength(TIPParser::ArrayPrefixLengthContext *ctx) override;

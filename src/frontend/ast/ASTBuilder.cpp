@@ -509,7 +509,7 @@ Any ASTBuilder::visitAssignStmt(TIPParser::AssignStmtContext *ctx) {
   visitedStmt->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-}
+} // LCOV_EXCL_LINE
 
 std::string ASTBuilder::generateSHA256(std::string tohash) {
   std::vector<unsigned char> hash(picosha2::k_digest_size);
@@ -532,7 +532,8 @@ Any ASTBuilder::visitArrayConstructor(TIPParser::ArrayConstructorContext *ctx) {
   visitedExpr->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-};
+}
+
 Any ASTBuilder::visitArrayOfConstructor(TIPParser::ArrayOfConstructorContext *ctx) {
   visit(ctx->expr(0));
   auto frequency = visitedExpr;
@@ -546,7 +547,8 @@ Any ASTBuilder::visitArrayOfConstructor(TIPParser::ArrayOfConstructorContext *ct
   visitedExpr->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-} ;
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitArrayRefExpr(TIPParser::ArrayRefExprContext *ctx) {
   visit(ctx->expr(0));
   auto array = visitedExpr;
@@ -560,7 +562,25 @@ Any ASTBuilder::visitArrayRefExpr(TIPParser::ArrayRefExprContext *ctx) {
   visitedExpr->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-};
+} // LCOV_EXCL_LINE
+
+Any ASTBuilder::visitTernaryExpr(TIPParser::TernaryExprContext *ctx) {
+  visit(ctx->expr(0));
+  auto cond = visitedExpr;
+  visit(ctx->expr(1));
+  auto then = visitedExpr;
+  visit(ctx->expr(2));
+  auto elseExpr = visitedExpr;
+  visitedExpr = std::make_shared<ASTTernaryExpr>(cond, then, elseExpr);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitNegExpr(TIPParser::NegExprContext *ctx) {
 
   visit(ctx->expr());
@@ -572,7 +592,8 @@ Any ASTBuilder::visitNegExpr(TIPParser::NegExprContext *ctx) {
   visitedExpr->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-};
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitNotExpr(TIPParser::NotExprContext *ctx) {
   visit(ctx->expr());
   visitedExpr = std::make_shared<ASTUnaryExpr>("not", visitedExpr);
@@ -583,7 +604,8 @@ Any ASTBuilder::visitNotExpr(TIPParser::NotExprContext *ctx) {
   visitedExpr->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-};
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitArrayPrefixLength(TIPParser::ArrayPrefixLengthContext *ctx) {
   visit(ctx->expr());
   visitedExpr = std::make_shared<ASTUnaryExpr>("#", visitedExpr);
@@ -594,11 +616,13 @@ Any ASTBuilder::visitArrayPrefixLength(TIPParser::ArrayPrefixLengthContext *ctx)
   visitedExpr->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-};
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitAndOrExpr(TIPParser::AndOrExprContext *ctx) {
   visitBinaryExpr(ctx, opString(ctx->op->getType()));
   return "";
-};
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitTrueExpr(TIPParser::TrueExprContext *ctx) {
   std::string val = ctx->KTRUE()->getText();
   visitedExpr = std::make_shared<ASTBooleanExpr>(val);
@@ -609,7 +633,8 @@ Any ASTBuilder::visitTrueExpr(TIPParser::TrueExprContext *ctx) {
   visitedExpr->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-};
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitFalseExpr(TIPParser::FalseExprContext *ctx) {
   std::string val = ctx->KFALSE()->getText();
   visitedExpr = std::make_shared<ASTBooleanExpr>(val);
@@ -620,7 +645,8 @@ Any ASTBuilder::visitFalseExpr(TIPParser::FalseExprContext *ctx) {
   visitedExpr->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-};
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitForStmt(TIPParser::ForStmtContext *ctx) {
   visit(ctx->expr(0));
   auto element = visitedExpr;
@@ -636,7 +662,8 @@ Any ASTBuilder::visitForStmt(TIPParser::ForStmtContext *ctx) {
   visitedStmt->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-};
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) {
   visit(ctx->expr(0));
   auto element = visitedExpr;
@@ -662,7 +689,8 @@ Any ASTBuilder::visitForRangeStmt(TIPParser::ForRangeStmtContext *ctx) {
   visitedStmt->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-};
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) {
   visit(ctx->expr());
   visitedStmt = std::make_shared<ASTIncrementStmt>(visitedExpr);
@@ -673,7 +701,8 @@ Any ASTBuilder::visitIncrementStmt(TIPParser::IncrementStmtContext *ctx) {
   visitedStmt->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-};
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitDecrementStmt(TIPParser::DecrementStmtContext *ctx) {
   visit(ctx->expr());
   visitedStmt = std::make_shared<ASTDecrementStmt>(visitedExpr);
@@ -684,4 +713,4 @@ Any ASTBuilder::visitDecrementStmt(TIPParser::DecrementStmtContext *ctx) {
   visitedStmt->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
   return "";
-};
+} // LCOV_EXCL_LINE
