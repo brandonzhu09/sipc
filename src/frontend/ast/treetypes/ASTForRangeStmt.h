@@ -3,7 +3,7 @@
 #include "ASTExpr.h"
 #include "ASTStmt.h"
 
-/*! \brief Class for a for iterative loop.
+/*! \brief Class for a for range loop.
  */
 class ASTForRangeStmt : public ASTStmt {
     std::shared_ptr<ASTExpr> ELEMENT;
