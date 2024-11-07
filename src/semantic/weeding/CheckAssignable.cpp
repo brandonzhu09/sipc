@@ -12,6 +12,9 @@ namespace {
 bool isAssignable(ASTExpr *e) {
   if (dynamic_cast<ASTVariableExpr *>(e))
     return true;
+  if (dynamic_cast<ASTArrayRefExpr *>(e)) {
+    return true;
+  }
   if (dynamic_cast<ASTAccessExpr *>(e)) {
     ASTAccessExpr *access = dynamic_cast<ASTAccessExpr *>(e);
     if (dynamic_cast<ASTVariableExpr *>(access->getRecord())) {
@@ -66,3 +69,64 @@ void CheckAssignable::check(ASTProgram *p) {
   CheckAssignable visitor;
   p->accept(&visitor);
 }
+
+void CheckAssignable::endVisit(ASTArrayRefExpr *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getArray()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getArray() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
+void CheckAssignable::endVisit(ASTIncrementStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getExpr()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getExpr() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
+void CheckAssignable::endVisit(ASTDecrementStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getExpr()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getExpr() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
+void CheckAssignable::endVisit(ASTForStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getElement()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getElement() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
+void CheckAssignable::endVisit(ASTForRangeStmt *element) {
+  LOG_S(1) << "Checking assignability of " << *element;
+
+  if (isAssignable(element->getElement()))
+    return;
+
+  std::ostringstream oss;
+  oss << "Address of error on line " << element->getLine() << ": ";
+  oss << *element->getElement() << " not an l-value\n";
+  throw SemanticError(oss.str());
+}
+
