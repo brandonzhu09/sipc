@@ -21,4 +21,8 @@ public:
   static void check(ASTProgram *p);
   virtual void endVisit(ASTAssignStmt *element) override;
   virtual void endVisit(ASTRefExpr *element) override;
+  virtual void endVisit(ASTIncrementStmt *element) override;
+  virtual void endVisit(ASTDecrementStmt *element) override;
+  virtual void endVisit(ASTForStmt *element) override;
+  virtual void endVisit(ASTForRangeStmt *element) override;
 };

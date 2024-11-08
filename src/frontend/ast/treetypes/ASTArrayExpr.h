@@ -5,7 +5,7 @@
 /*! \brief Class for defining an array.
  */
 class ASTArrayExpr : public ASTExpr {
-    std::vector<std::shared_ptr<ASTExpr>> ELEMENTS;
+    std::vector<std::shared_ptr<ASTExpr>> ELEMENTS = {};
 
 public:
     std::vector<std::shared_ptr<ASTNode>> getChildren() override;

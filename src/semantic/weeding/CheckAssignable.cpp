@@ -70,17 +70,17 @@ void CheckAssignable::check(ASTProgram *p) {
   p->accept(&visitor);
 }
 
-void CheckAssignable::endVisit(ASTArrayRefExpr *element) {
-  LOG_S(1) << "Checking assignability of " << *element;
-
-  if (isAssignable(element->getArray()))
-    return;
-
-  std::ostringstream oss;
-  oss << "Address of error on line " << element->getLine() << ": ";
-  oss << *element->getArray() << " not an l-value\n";
-  throw SemanticError(oss.str());
-}
+// void CheckAssignable::endVisit(ASTArrayRefExpr *element) {
+//   LOG_S(1) << "Checking assignability of " << *element;
+//
+//   if (isAssignable(element->getArray()))
+//     return;
+//
+//   std::ostringstream oss;
+//   oss << "Address of error on line " << element->getLine() << ": ";
+//   oss << *element->getArray() << " not an l-value\n";
+//   throw SemanticError(oss.str());
+// }
 
 void CheckAssignable::endVisit(ASTIncrementStmt *element) {
   LOG_S(1) << "Checking assignability of " << *element;
