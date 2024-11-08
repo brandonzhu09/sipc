@@ -90,13 +90,15 @@ void TypeConstraintVisitor::endVisit(ASTNumberExpr *element) {
 }
 
 /*! \brief Type constraints for binary operator.
- *
+*
  * Type rules for "E1 op E2":
- *   [[E1 op E2]] = int
- * and if "op" is not equality or disequality
+ * if "op" is "and" or "or":
+ *   [[E1]] = [[E2]] = [[E1 op E2]] = bool
+ * and if "op" is a comparison operator, excluding "==" and "!="
  *   [[E1]] = [[E2]] = int
+ *   [[E1 op E2]] = bool
  * otherwise
- *   [[E1]] = [[E2]]
+ *   [[E1]] = [[E2]] = [[E1 op E2]] = int
  */
 void TypeConstraintVisitor::endVisit(ASTBinaryExpr *element) {
     auto op = element->getOp();
@@ -330,7 +332,7 @@ void TypeConstraintVisitor::endVisit(ASTTernaryExpr *element) {
  * [[E2]], ...,  [[En]] = [[E1]]
  * [[[E1, ..., En]]] = arr of [[E1]]
  * if the array is empty
- * [[[E1, ..., En]]] = \alpha
+ * [[[E1, ..., En]]] = arr of \alpha
  */
 void TypeConstraintVisitor::endVisit(ASTArrayExpr *element) {
     int size = element->getChildren().size(); 
@@ -367,6 +369,7 @@ void TypeConstraintVisitor::endVisit(ASTArrayOfExpr *element) {
 /*! \brief Type constraints for array index expression.
  *
  * Type rules for "E1[E2]":
+ * [[E1[E2]]] = \alpha
  * [[E1]] = arr of E1[E2]
  * [[E2]] = int
  */
@@ -385,12 +388,15 @@ void TypeConstraintVisitor::endVisit(ASTArrayRefExpr *element) {
  * if "op" is array prefix notation
  *   [[op E1]] = int
  *   [[E1]] = array type
- * and if "op" is not 
+ * and if "op" is not
  *   [[op E1]] = bool
  *   [[E1]] = bool
  * and if "op" is -
  *   [[op E1]] = int
- *   [[E1]] = anything?
+ *   [[E1]] = int
+ *  otherwise
+ *   [[op E1]] = bool
+ *   [[E1]] = bool
  */
 void TypeConstraintVisitor::endVisit(ASTUnaryExpr *element) {
   auto op = element->getOp();
