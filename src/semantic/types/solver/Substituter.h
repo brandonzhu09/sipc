@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TipTypeVisitor.h"
+#include "TypeConstraintVisitor.h"
 
 /*! \brief Produces a type with designated variable substitutions.
  */
@@ -42,4 +43,7 @@ public:
   virtual void endVisit(TipAbsentField *element) override;
   virtual void endVisit(TipRef *element) override;
   virtual void endVisit(TipVar *element) override;
+
+  virtual void endVisit(TipBool *element) override;
+  virtual void endVisit(TipArr *element) override;
 };

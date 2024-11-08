@@ -1,5 +1,6 @@
 #include "Substituter.h"
 #include "Copier.h"
+#include "TypeConstraintVisitor.h"
 
 #include <algorithm>
 #include <iterator>
@@ -94,4 +95,33 @@ void Substituter::endVisit(TipAlpha *element) {
     visitedTypes.push_back(
         std::make_shared<TipAlpha>(element->getNode(), element->getName()));
   }
+}
+
+
+void Substituter::endVisit(TipBool *element) {
+  visitedTypes.push_back(std::make_shared<TipBool>());
+}
+
+void Substituter::endVisit(TipArr *element) {
+  // One element in visitedTypes (a special case of Cons)
+  auto pointedToType = visitedTypes.back();
+  visitedTypes.pop_back();
+  visitedTypes.push_back(std::make_shared<TipArr>(pointedToType));
+  // std::vector<std::shared_ptr<TipType>> initTypes;
+  //
+  // std::shared_ptr<TipType> type = visitedTypes.back();
+  // for (auto &e : element->getElements()) {
+  //   initTypes.push_back(std::move(visitedTypes.back()));
+  //   visitedTypes.pop_back();
+  // }
+  //
+  // // the post-order visit will reverse the arguments in visitedTypes
+  // // so we set them right here
+  // std::reverse(initTypes.begin(), initTypes.end());
+  //
+  // // std::shared_ptr<TipType> type = initTypes.back();
+  // // initTypes.pop_back();
+  //
+  // visitedTypes.push_back(std::make_shared<TipArr>(type));
+
 }

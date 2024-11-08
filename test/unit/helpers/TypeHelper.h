@@ -14,4 +14,7 @@ public:
     static std::shared_ptr<TipType> funType(std::vector<std::shared_ptr<TipType>> p, std::shared_ptr<TipType> r);
     static std::shared_ptr<TipType> recType(std::vector<std::shared_ptr<TipType>> t, std::vector<std::string> n);
     static std::shared_ptr<TipType> absentType();
+
+    static std::shared_ptr<TipType> boolType();
+    static std::shared_ptr<TipType> arrType(std::shared_ptr<TipType> t);
 };
