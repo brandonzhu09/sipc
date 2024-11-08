@@ -17,6 +17,7 @@ TEST_CASE("ASTVisualizer: Generate dot graph", "[ASTVisualizer]") {
         y = alloc x;
         *y = x;
         z = *y;
+        while (true) output 1;
         return z;
       }
     )";
@@ -28,8 +29,8 @@ TEST_CASE("ASTVisualizer: Generate dot graph", "[ASTVisualizer]") {
   ASTVisualizer visualizer(graph);
   visualizer.buildGraph(syntaxTree);
 
-  int expectedNodeCount = 24;
-  int expectedEdgeCount = 23;
+  int expectedNodeCount = 28;
+  int expectedEdgeCount = 27;
   REQUIRE(expectedNodeCount ==
           GeneralHelper::countSubstrings(graph.str(), "label"));
   REQUIRE(expectedEdgeCount ==
