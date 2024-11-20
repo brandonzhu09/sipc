@@ -1083,11 +1083,22 @@ llvm::Value *ASTReturnStmt::codegen() {
   return irBuilder.CreateRet(argVal);
 }
 
+/*
+  Generates LLVM code for creating an array
+  - It retrieves the elements of the array and determines the size of the array.
+  - Allocates memory for the array using 'calloc', with space for the array length plus the elements.
+  - The first element of the allocated space is used to store the length of the array.
+  - Iterates over the array elements, generating code for
+     each element and storing them in the allocated array space.
+  - The array elements start from the second position in the allocated space (index 1),
+      as the first position (index 0) is reserved for the array length.
+  - After storing all elements, it returns the pointer to the allocated array, cast to a 64-bit integer.
+*/
 llvm::Value *ASTArrayExpr::codegen() {
   LOG_S(1) << "Generating code for " << *this;
 
   auto elements = getElements();
-  int loopSize = ELEMENTS.size();
+  int loopSize = elements.size();
   Value* arrLen = ConstantInt::get(Type::getInt64Ty(llvmContext), loopSize);
 
   //Allocate an int pointer with calloc
@@ -1126,16 +1137,79 @@ llvm::Value *ASTBooleanExpr::codegen() {
 
 /*
   Generates LLVM code for creating an ArrayOfExpr.
-  - Generates size and check if null, throwing an error if it's null.
-  - Generates value and value if null, throwing an error if it's null.
   - Allocates memory for the array using 'calloc', which is sized based on the size expression plus one.
   - The first element of the array is used to store its size.
   - Loop to initialize each value in array
   - Return a pointer to the array, cast to a 64-bit integer.
 */
 llvm::Value *ASTArrayOfExpr::codegen() {
-  // TODO: Implement the code generation logic for this method
-  return nullptr;
+  LOG_S(1) << "Generating code for " << *this;
+
+  Value* elemLength = getFrequency()->codegen();
+  Value* length = irBuilder.CreateAdd(elemLength, oneV, "elemsAndLen");
+  Value* arrVal = getElement()->codegen();
+  auto * counter = irBuilder.CreateAlloca(Type::getInt64Ty(llvmContext), 0, "ofArrayCounter");
+
+  // Allocate an int pointer with calloc
+  std::vector<Value *> twoArg;
+  twoArg.push_back(length);
+  twoArg.push_back(ConstantInt::get(Type::getInt64Ty(llvmContext), 8));
+  auto *allocInst = irBuilder.CreateCall(callocFun, twoArg, "allocPtr");
+  auto *arrayPtr = irBuilder.CreatePointerCast(
+      allocInst, Type::getInt64PtrTy(llvmContext), "arrayPtr");
+
+  irBuilder.CreateStore(elemLength, arrayPtr);
+
+  // Increment the counter
+  Value* loadedCounter = irBuilder.CreateLoad(counter->getAllocatedType(), counter, "loadedCounter");
+  Value* tmp = irBuilder.CreateAdd(loadedCounter, oneV, "storeArrLen");
+  irBuilder.CreateStore(tmp, counter);
+
+  llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
+
+  labelNum++; // create unique labels for these BBs
+
+  BasicBlock *HeaderBB = BasicBlock::Create(
+      llvmContext, "header" + std::to_string(labelNum), TheFunction);
+  BasicBlock *BodyBB =
+      BasicBlock::Create(llvmContext, "body" + std::to_string(labelNum), TheFunction);
+  BasicBlock *ExitBB =
+      BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum), TheFunction);
+
+  // Add an explicit branch from the current BB to the header
+  irBuilder.CreateBr(HeaderBB);
+
+  // Emit loop header
+  {
+    irBuilder.SetInsertPoint(HeaderBB);
+
+    loadedCounter = irBuilder.CreateLoad(counter->getAllocatedType(), counter, "loadedCounter");
+    Value* CondV = irBuilder.CreateICmpSLT(loadedCounter, length, "loopcond");
+
+    irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
+  }
+
+  // Emit loop body
+  {
+    irBuilder.SetInsertPoint(BodyBB);
+
+    // Convert l-value to r-value
+    loadedCounter = irBuilder.CreateLoad(counter->getAllocatedType(), counter, "loadedCounter");
+
+    // Store in array memory
+    Value* gep = irBuilder.CreateGEP(Type::getInt64Ty(llvmContext), arrayPtr, std::vector<Value*>{loadedCounter});
+    irBuilder.CreateStore(arrVal, gep);
+
+    // Increment the counter
+    tmp = irBuilder.CreateAdd(loadedCounter, oneV, "storeArrLen");
+    irBuilder.CreateStore(tmp, counter);
+
+    irBuilder.CreateBr(HeaderBB);
+  }
+
+  // Emit loop exit block.
+  irBuilder.SetInsertPoint(ExitBB);
+  return irBuilder.CreateCall(nop);
 }
 
 /*
@@ -1260,6 +1334,18 @@ llvm::Value *ASTDecrementStmt::codegen() {
   return irBuilder.CreateStore(inc, lValue);
 }
 
+/*
+ * The code generated for an ForStmt looks like this:
+ *       <INIT> initializes the array
+ *          v
+ *       <HEADER>
+ *          /  ^  \ out of range
+ *         v  /    \
+ *      <BODY>     /
+ *                /
+ *               v
+ *              nop        	this is called the "exit" block
+ */
 llvm::Value *ASTForStmt::codegen() {
   LOG_S(1) << "Generating code for " << *this;
 
@@ -1270,11 +1356,11 @@ llvm::Value *ASTForStmt::codegen() {
   BasicBlock *InitBB = BasicBlock::Create(
       llvmContext, "init" + std::to_string(labelNum), TheFunction);
   BasicBlock *HeaderBB = BasicBlock::Create(
-      llvmContext, "header" + std::to_string(labelNum));
+      llvmContext, "header" + std::to_string(labelNum), TheFunction);
   BasicBlock *BodyBB =
-      BasicBlock::Create(llvmContext, "body" + std::to_string(labelNum));
+      BasicBlock::Create(llvmContext, "body" + std::to_string(labelNum), TheFunction);
   BasicBlock *ExitBB =
-      BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum));
+      BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum), TheFunction);
 
   // Add an explicit branch from the current BB to the Init block
   irBuilder.CreateBr(InitBB);
@@ -1309,7 +1395,6 @@ llvm::Value *ASTForStmt::codegen() {
   irBuilder.CreateBr(HeaderBB);
 
   // Emit loop header
-  TheFunction->getBasicBlockList().push_back(HeaderBB);
   irBuilder.SetInsertPoint(HeaderBB);
 
   Value *CondV = irBuilder.CreateICmpSLE(Index, ArrayLength, "inrange");
@@ -1317,12 +1402,11 @@ llvm::Value *ASTForStmt::codegen() {
   irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
 
   // Emit loop body
-  TheFunction->getBasicBlockList().push_back(BodyBB);
   irBuilder.SetInsertPoint(BodyBB);
 
   // Assign element of array
-  Value *ElemPtr = irBuilder.CreateGEP(ArrayPtr->getType()->getPointerElementType(), ArrayPtr, {Index}, "ElemPtr");
-  irBuilder.CreateLoad(ElemPtr->getType()->getPointerElementType(), ElemPtr, "LoadElement");
+  Value *ElemPtr = irBuilder.CreateGEP(Type::getInt64Ty(llvmContext), ArrayPtr, {Index}, "ElemPtr");
+  irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), ElemPtr, "LoadElement");
 
   // Update index
   Index = irBuilder.CreateAdd(Index, ConstantInt::get(Type::getInt64Ty(llvmContext), 1), "addtmp");
@@ -1337,22 +1421,146 @@ llvm::Value *ASTForStmt::codegen() {
   irBuilder.CreateBr(HeaderBB);
 
   // Emit loop exit block.
-  TheFunction->getBasicBlockList().push_back(ExitBB);
   irBuilder.SetInsertPoint(ExitBB);
   return irBuilder.CreateCall(nop);
 }
 
+/*
+ * The code generated for an forRangeStmt looks like this:
+ *        <INIT>           this is executed only once
+ *           v
+ *          <TEST>
+ *   true   /  ^  \   false
+ *         v   |   v
+ *      <BODY> /  nop      this is called the "exit" block
+ *         v  v
+ *      <UPDATE>
+ */
 llvm::Value *ASTForRangeStmt::codegen() {
-  // TODO: Implement the code generation logic for this method
-  return nullptr;
+  LOG_S(1) << "Generating code for " << *this;
+
+  llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
+
+  labelNum++; // create unique labels for these BBs
+
+  BasicBlock *HeaderBB = BasicBlock::Create(
+      llvmContext, "header" + std::to_string(labelNum), TheFunction);
+  BasicBlock *BodyBB =
+      BasicBlock::Create(llvmContext, "body" + std::to_string(labelNum), TheFunction);
+  BasicBlock *ExitBB =
+      BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum), TheFunction);
+
+  // Add an explicit branch from the current BB to the header
+  lValueGen = true;
+  Value *CurrV = getElement()->codegen();
+  lValueGen = false;
+  if (CurrV == nullptr) {
+    throw InternalError("failed to generate bitcode for the curr iter position");
+  }
+  Value *StartV = getStart()->codegen();
+  if (StartV == nullptr) {
+    throw InternalError("failed to generate bitcode for start position");
+  }
+
+  irBuilder.CreateStore(StartV, CurrV);
+
+  Value *EndV = getEnd()->codegen();
+  if (EndV == nullptr) {
+    throw InternalError("failed to generate bitcode for end position");
+  }
+  Value *StepV;
+  if (getIncrement() != nullptr) {
+     StepV = getIncrement()->codegen();
+  } else {
+    StepV = ConstantInt::get(Type::getInt64Ty(llvmContext), 1);
+  }
+
+  irBuilder.CreateBr(HeaderBB);
+  // Emit loop header
+  {
+    irBuilder.SetInsertPoint(HeaderBB);
+
+    // Check if the curr value is in between the start/end values
+    Value *CondV = irBuilder.CreateICmpSLT(getStart()->codegen(), EndV, "loopcond");
+    irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
+  }
+
+  // Emit loop body
+  {
+    irBuilder.SetInsertPoint(BodyBB);
+
+    Value *BodyV = getBody()->codegen();
+    if (BodyV == nullptr) {
+      throw InternalError("failed to generate bitcode for the loop body"); // LCOV_EXCL_LINE
+    }
+    Value* tmp = irBuilder.CreateAdd(getStart()->codegen(), StepV, "steptmp");
+    irBuilder.CreateStore(tmp, CurrV);
+    irBuilder.CreateBr(HeaderBB);
+  }
+
+  // Emit loop exit block.
+  irBuilder.SetInsertPoint(ExitBB);
+  return irBuilder.CreateCall(nop);
 }
 
 llvm::Value *ASTUnaryExpr::codegen() {
-  // TODO: Implement the code generation logic for this method
-  return nullptr;
+  LOG_S(1) << "Generating code for " << *this;
+
+  Value *R = getExpr()->codegen();
+  if (R == nullptr) {
+    throw InternalError("null unary operand");
+  }
+
+  // Arithmetic Negation Operator
+  if (getOp() == "-") {
+    return irBuilder.CreateNeg(R, "arinegtmp");
+    // Logical Negation Operator
+  } else if (getOp() == "not") {
+    return irBuilder.CreateNot(R, "lognegtmp");
+    // Array Length Operator
+  } else if (getOp() == "#") {
+    Value* arr = getExpr()->codegen();
+    Value* gep = irBuilder.CreateGEP(Type::getInt64Ty(llvmContext), arr, zeroV);
+    if (lValueGen) return gep;
+    else return irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), gep);
+  } else {
+    throw InternalError("Invalid unary operator: " + OP);
+  }
 }
 
+/*
+ * The code generated for ternary expression looks like this:
+ *
+ *       <COND> == 0
+ *   true   /     \   false
+ *         v       v
+ *       <IF>   <ELSE>  if defined, otherwise use a nop
+ *          \     /
+ *           v   v
+ *            nop        this is called the merge basic block
+ */
 llvm::Value *ASTTernaryExpr::codegen() {
-  // TODO: Implement the code generation logic for this method
-  return nullptr;
+  LOG_S(1) << "Generating code for " << *this;
+
+  Value *CondV = getCondition()->codegen();
+  if (CondV == nullptr) {
+    throw InternalError(                                   // LCOV_EXCL_LINE
+    "failed to generate bitcode for the conditional expression"); // LCOV_EXCL_LINE
+  }
+
+  // Convert condition to a bool by comparing non-equal to 0.
+  CondV = irBuilder.CreateICmpNE(CondV, ConstantInt::get(CondV->getType(), 0), "ternarycond");
+
+  Value *ThenV = getThen()->codegen();
+  if (ThenV == nullptr) {
+    throw InternalError(                                   // LCOV_EXCL_LINE
+    "failed to generate bitcode for the then expression"); // LCOV_EXCL_LINE
+  }
+  Value *ElseV = getElse()->codegen();
+  if (ElseV == nullptr) {
+    throw InternalError(                                   // LCOV_EXCL_LINE
+    "failed to generate bitcode for the else expression"); // LCOV_EXCL_LINE
+  }
+
+  return irBuilder.CreateSelect(CondV, ThenV, ElseV);
 }
