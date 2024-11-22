@@ -1503,7 +1503,9 @@ llvm::Value *ASTUnaryExpr::codegen() {
     return irBuilder.CreateNeg(R, "arinegtmp");
     // Logical Negation Operator
   } else if (getOp() == "not") {
-    return irBuilder.CreateNot(R, "lognegtmp");
+    auto *cmp = irBuilder.CreateICmpEQ(R, zeroV);
+    return irBuilder.CreateIntCast(cmp, IntegerType::getInt64Ty(llvmContext),
+                                 false, "lognegtmp");
     // Array Length Operator
   } else if (getOp() == "#") {
     llvm::Value *array = getExpr()->codegen();
