@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsymboltable.a CMakeFiles/symboltable.dir/SymbolTable.cpp.o CMakeFiles/symboltable.dir/FunctionNameCollector.cpp.o CMakeFiles/symboltable.dir/LocalNameCollector.cpp.o CMakeFiles/symboltable.dir/FieldNameCollector.cpp.o
+/usr/bin/ranlib libsymboltable.a

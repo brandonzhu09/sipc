@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcfa.a CMakeFiles/cfa.dir/CubicSolver.cpp.o CMakeFiles/cfa.dir/CFAnalyzer.cpp.o CMakeFiles/cfa.dir/CallGraphBuilder.cpp.o CMakeFiles/cfa.dir/CallGraph.cpp.o CMakeFiles/cfa.dir/__/__/__/externals/loguru/loguru.cpp.o
+/usr/bin/ranlib libcfa.a

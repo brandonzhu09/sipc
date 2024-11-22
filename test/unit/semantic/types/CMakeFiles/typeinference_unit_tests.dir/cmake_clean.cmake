@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipAbsentFieldTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipAbsentFieldTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipAlphaTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipAlphaTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipArrTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipArrTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipBoolTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipBoolTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipConsTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipConsTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipFunctionTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipFunctionTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipIntTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipIntTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipMuTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipMuTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipRecordTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipRecordTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipRefTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipRefTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipVarTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/concrete/TipVarTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/constraints/AbsentFieldCheckerTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/constraints/AbsentFieldCheckerTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/constraints/PolyTypeConstraintCollectTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/constraints/PolyTypeConstraintCollectTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/constraints/TypeConstraintCollectTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/constraints/TypeConstraintCollectTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/constraints/TypeConstraintTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/constraints/TypeConstraintTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/solvers/UnifierTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/solvers/UnifierTest.cpp.o.d"
+  "CMakeFiles/typeinference_unit_tests.dir/solvers/UnionFindTest.cpp.o"
+  "CMakeFiles/typeinference_unit_tests.dir/solvers/UnionFindTest.cpp.o.d"
+  "typeinference_unit_tests"
+  "typeinference_unit_tests.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/typeinference_unit_tests.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

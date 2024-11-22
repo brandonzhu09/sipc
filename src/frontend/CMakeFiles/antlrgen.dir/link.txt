@@ -1,0 +1,2 @@
+/usr/bin/ar qc libantlrgen.a CMakeFiles/antlrgen.dir/antlr4cpp_generated_src/TIP/TIPLexer.cpp.o CMakeFiles/antlrgen.dir/antlr4cpp_generated_src/TIP/TIPParser.cpp.o CMakeFiles/antlrgen.dir/antlr4cpp_generated_src/TIP/TIPBaseVisitor.cpp.o CMakeFiles/antlrgen.dir/antlr4cpp_generated_src/TIP/TIPVisitor.cpp.o
+/usr/bin/ranlib libantlrgen.a

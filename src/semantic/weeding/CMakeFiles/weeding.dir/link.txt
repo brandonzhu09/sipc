@@ -1,0 +1,2 @@
+/usr/bin/ar qc libweeding.a CMakeFiles/weeding.dir/CheckAssignable.cpp.o
+/usr/bin/ranlib libweeding.a

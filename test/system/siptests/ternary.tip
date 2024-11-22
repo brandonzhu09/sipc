@@ -1,0 +1,11 @@
+foo(n){
+  var x;
+  x = (n > 0) ? 1 : -1;
+  return x;
+}
+
+main(){
+  if (foo(2) != 1) error foo(2);
+  if (foo(-2) != -1) error foo(-2);
+  return 0;
+}

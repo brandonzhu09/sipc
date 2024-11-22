@@ -1,0 +1,2 @@
+/usr/bin/ar qc libiterators.a CMakeFiles/iterators.dir/PreOrderIterator.cpp.o CMakeFiles/iterators.dir/IteratorImpl.cpp.o CMakeFiles/iterators.dir/Iterator.cpp.o
+/usr/bin/ranlib libiterators.a

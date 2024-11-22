@@ -1,0 +1,2 @@
+/usr/bin/ar qc libtest_helpers.a CMakeFiles/test_helpers.dir/ASTHelper.cpp.o CMakeFiles/test_helpers.dir/GeneralHelper.cpp.o CMakeFiles/test_helpers.dir/ParserHelper.cpp.o CMakeFiles/test_helpers.dir/TypeHelper.cpp.o
+/usr/bin/ranlib libtest_helpers.a

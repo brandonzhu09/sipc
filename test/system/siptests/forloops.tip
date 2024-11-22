@@ -1,0 +1,6 @@
+main(){
+  var i,x;
+  x = 0;
+
+  return 0;
+}

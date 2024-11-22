@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsemantic.a CMakeFiles/semantic.dir/SemanticAnalysis.cpp.o CMakeFiles/semantic.dir/cfa/CubicSolver.cpp.o CMakeFiles/semantic.dir/cfa/CFAnalyzer.cpp.o CMakeFiles/semantic.dir/cfa/CallGraphBuilder.cpp.o CMakeFiles/semantic.dir/cfa/CallGraph.cpp.o CMakeFiles/semantic.dir/__/__/externals/loguru/loguru.cpp.o
+/usr/bin/ranlib libsemantic.a

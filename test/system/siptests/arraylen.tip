@@ -1,0 +1,7 @@
+main() {
+    var x,y;
+    x = [1,8,4,2];
+    y = [10 of true];
+
+    if (#x != 4) error 0;
+}

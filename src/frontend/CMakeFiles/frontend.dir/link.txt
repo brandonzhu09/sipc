@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfrontend.a CMakeFiles/frontend.dir/FrontEnd.cpp.o
+/usr/bin/ranlib libfrontend.a

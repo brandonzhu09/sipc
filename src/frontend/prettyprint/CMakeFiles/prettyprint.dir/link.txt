@@ -1,0 +1,2 @@
+/usr/bin/ar qc libprettyprint.a CMakeFiles/prettyprint.dir/PrettyPrinter.cpp.o CMakeFiles/prettyprint.dir/ASTVisualizer.cpp.o
+/usr/bin/ranlib libprettyprint.a

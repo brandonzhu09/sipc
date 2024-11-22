@@ -1145,73 +1145,55 @@ llvm::Value *ASTBooleanExpr::codegen() {
 llvm::Value *ASTArrayOfExpr::codegen() {
   LOG_S(1) << "Generating code for " << *this;
 
-  Value* elemLength = getFrequency()->codegen();
-  Value* length = irBuilder.CreateAdd(elemLength, oneV, "elemsAndLen");
-  Value* arrVal = getElement()->codegen();
-  auto * counter = irBuilder.CreateAlloca(Type::getInt64Ty(llvmContext), 0, "ofArrayCounter");
-
-  // Allocate an int pointer with calloc
-  std::vector<Value *> twoArg;
-  twoArg.push_back(length);
-  twoArg.push_back(ConstantInt::get(Type::getInt64Ty(llvmContext), 8));
-  auto *allocInst = irBuilder.CreateCall(callocFun, twoArg, "allocPtr");
-  auto *arrayPtr = irBuilder.CreatePointerCast(
-      allocInst, Type::getInt64PtrTy(llvmContext), "arrayPtr");
-
-  irBuilder.CreateStore(elemLength, arrayPtr);
-
-  // Increment the counter
-  Value* loadedCounter = irBuilder.CreateLoad(counter->getAllocatedType(), counter, "loadedCounter");
-  Value* tmp = irBuilder.CreateAdd(loadedCounter, oneV, "storeArrLen");
-  irBuilder.CreateStore(tmp, counter);
-
-  llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
-
-  labelNum++; // create unique labels for these BBs
-
-  BasicBlock *HeaderBB = BasicBlock::Create(
-      llvmContext, "header" + std::to_string(labelNum), TheFunction);
-  BasicBlock *BodyBB =
-      BasicBlock::Create(llvmContext, "body" + std::to_string(labelNum), TheFunction);
-  BasicBlock *ExitBB =
-      BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum), TheFunction);
-
-  // Add an explicit branch from the current BB to the header
-  irBuilder.CreateBr(HeaderBB);
-
-  // Emit loop header
-  {
-    irBuilder.SetInsertPoint(HeaderBB);
-
-    loadedCounter = irBuilder.CreateLoad(counter->getAllocatedType(), counter, "loadedCounter");
-    Value* CondV = irBuilder.CreateICmpSLT(loadedCounter, length, "loopcond");
-
-    irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
+  // Generate code for the size and the value
+  Value* sizeExpr = getFrequency()->codegen();
+  if (sizeExpr == nullptr) {
+    throw InternalError("Error generating code for array sizeExpr");
   }
+  Value* sizeExprValue = irBuilder.CreateAdd(sizeExpr, oneV, "sizePlusOne");
+  Value* valueExpr = getElement()->codegen();
+  // Allocate memory for the array
+  std::vector<llvm::Value*> callocArgs = {
+    sizeExprValue, // Number of elements in the array
+    llvm::ConstantInt::get(Type::getInt64Ty(llvmContext), 8) // Size of each element (8 bytes for int64)
+  };
+  auto *allocInst = irBuilder.CreateCall(callocFun, callocArgs, "allocPtr");
+  auto *arrayPtr = irBuilder.CreatePointerCast(allocInst, Type::getInt64PtrTy(llvmContext), "arrayPtr");
+  irBuilder.CreateStore(sizeExpr, arrayPtr);
 
-  // Emit loop body
-  {
-    irBuilder.SetInsertPoint(BodyBB);
+  // Create a loop to initialize each element of the array with valueExpr
+  Function* TheFunction = irBuilder.GetInsertBlock()->getParent();
+  BasicBlock* preheaderBlock = irBuilder.GetInsertBlock();
+  BasicBlock* loopBlock = BasicBlock::Create(llvmContext, "loop", TheFunction);
+  BasicBlock* afterLoopBlock = BasicBlock::Create(llvmContext, "afterLoop", TheFunction);
+  irBuilder.CreateBr(loopBlock);
 
-    // Convert l-value to r-value
-    loadedCounter = irBuilder.CreateLoad(counter->getAllocatedType(), counter, "loadedCounter");
+  // Start insertion in loopBlock
+  irBuilder.SetInsertPoint(loopBlock);
 
-    // Store in array memory
-    Value* gep = irBuilder.CreateGEP(Type::getInt64Ty(llvmContext), arrayPtr, std::vector<Value*>{loadedCounter});
-    irBuilder.CreateStore(arrVal, gep);
+  // Create the PHI node for the loop variable, initialize with 1 to skip size storage
+  llvm::PHINode* loopVar = irBuilder.CreatePHI(Type::getInt64Ty(llvmContext), 2);
+  loopVar->addIncoming(ConstantInt::get(Type::getInt64Ty(llvmContext), 1), preheaderBlock);
 
-    // Increment the counter
-    tmp = irBuilder.CreateAdd(loadedCounter, oneV, "storeArrLen");
-    irBuilder.CreateStore(tmp, counter);
+  // Calculate the address for the current element in the array
+  llvm::Value* elementPtr = irBuilder.CreateGEP(Type::getInt64Ty(llvmContext),arrayPtr, loopVar, "elementPtr");
+  irBuilder.CreateStore(valueExpr, elementPtr);
 
-    irBuilder.CreateBr(HeaderBB);
-  }
+  // Increment the loop variable
+  llvm::Value* nextVal = irBuilder.CreateAdd(loopVar, oneV, "nextVal");
+  loopVar->addIncoming(nextVal, loopBlock);
 
-  // Emit loop exit block.
-  irBuilder.SetInsertPoint(ExitBB);
-  return irBuilder.CreateCall(nop);
+  // Create the end condition for the loop
+  llvm::Value* endCond = irBuilder.CreateICmpEQ(nextVal, sizeExprValue, "loopcond");
+  irBuilder.CreateCondBr(endCond, afterLoopBlock, loopBlock);
+
+  // Insert the after loop block
+  irBuilder.SetInsertPoint(afterLoopBlock);
+
+  // The arrayPtr is a pointer to the first element of the array
+  return irBuilder.CreatePtrToInt(arrayPtr, Type::getInt64Ty(llvmContext));
+
 }
-
 /*
   Generates the LLVM for accessing an element of an array
   - Generate Value for the array and the index expression.
@@ -1351,74 +1333,73 @@ llvm::Value *ASTForStmt::codegen() {
 
   llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
 
-  labelNum++; // create shared labels for these BBs
+  labelNum++; // create unique labels for these BBs
 
-  BasicBlock *InitBB = BasicBlock::Create(
-      llvmContext, "init" + std::to_string(labelNum), TheFunction);
   BasicBlock *HeaderBB = BasicBlock::Create(
       llvmContext, "header" + std::to_string(labelNum), TheFunction);
   BasicBlock *BodyBB =
-      BasicBlock::Create(llvmContext, "body" + std::to_string(labelNum), TheFunction);
+      BasicBlock::Create(llvmContext, "body" + std::to_string(labelNum));
   BasicBlock *ExitBB =
-      BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum), TheFunction);
+      BasicBlock::Create(llvmContext, "exit" + std::to_string(labelNum));
 
-  // Add an explicit branch from the current BB to the Init block
-  irBuilder.CreateBr(InitBB);
-
-  // Emit loop init
-  irBuilder.SetInsertPoint(InitBB);
-  // trigger code generation for Element expression l-value
+  // Add an explicit branch from the current BB to the header
   lValueGen = true;
   Value *ElemV = getElement()->codegen();
   lValueGen = false;
   if (ElemV == nullptr) {
-    throw InternalError(                                 // LCOV_EXCL_LINE
-        "failed to generate bitcode for the loop element"); // LCOV_EXCL_LINE
+    throw InternalError("failed to generate bitcode for the curr iter position");
+  }
+  Value *ArrV = getIter()->codegen();
+  if (ArrV == nullptr) {
+    throw InternalError("failed to generate bitcode for iterable array");
   }
 
-  // trigger code generation for Array expression
-  Value *ArrayV = getIter()->codegen();
-  if (ArrayV == nullptr) {
-    throw InternalError(                                 // LCOV_EXCL_LINE
-        "failed to generate bitcode for the loop array"); // LCOV_EXCL_LINE
+  // An attempt at getting array length?
+  Value* arrLenGEP = irBuilder.CreateGEP(Type::getInt64Ty(llvmContext), ArrV, zeroV);
+  Value *ArrLenV = nullptr;
+  if (lValueGen) {
+    ArrLenV = arrLenGEP;
+  }
+  else {
+    ArrLenV = irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), arrLenGEP);
   }
 
-  Value *ArrayAddr = irBuilder.CreateIntToPtr(ArrayV, Type::getInt64PtrTy(llvmContext), "ArrayAddr");
-  Value *ArrayPtr = irBuilder.CreateIntToPtr(ArrayAddr, Type::getInt64PtrTy(llvmContext), "ArrayPtr");
-
-  // Array Length
-  Value *ArrayLength = irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), ArrayAddr, "ArrayLength");
-
-  // Index starts from 1 for implementing reason
-  Value *Index = ConstantInt::get(Type::getInt64Ty(llvmContext), 1);
+  Value *CounterV = zeroV;
+  Value *StepV = oneV;
 
   irBuilder.CreateBr(HeaderBB);
-
   // Emit loop header
-  irBuilder.SetInsertPoint(HeaderBB);
+  {
+    irBuilder.SetInsertPoint(HeaderBB);
 
-  Value *CondV = irBuilder.CreateICmpSLE(Index, ArrayLength, "inrange");
-
-  irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
-
-  // Emit loop body
-  irBuilder.SetInsertPoint(BodyBB);
-
-  // Assign element of array
-  Value *ElemPtr = irBuilder.CreateGEP(Type::getInt64Ty(llvmContext), ArrayPtr, {Index}, "ElemPtr");
-  irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), ElemPtr, "LoadElement");
-
-  // Update index
-  Index = irBuilder.CreateAdd(Index, ConstantInt::get(Type::getInt64Ty(llvmContext), 1), "addtmp");
-
-  // Emit loop body
-  Value *BodyV = getBody()->codegen();
-  if (BodyV == nullptr) {
-    throw InternalError(                                 // LCOV_EXCL_LINE
-        "failed to generate bitcode for the loop body"); // LCOV_EXCL_LINE
+    // Check if the curr value is in between the start/end values
+    Value *CondV = irBuilder.CreateICmpSLT(CounterV, ArrLenV, "loopcond");
+    irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
   }
 
-  irBuilder.CreateBr(HeaderBB);
+  // Emit loop body
+  {
+    irBuilder.SetInsertPoint(BodyBB);
+
+    // An attempt at getting array elements
+    Value* arrLenGEP = irBuilder.CreateGEP(Type::getInt64Ty(llvmContext), ArrV, CounterV);
+    Value *ArrAccessV = nullptr;
+    if (lValueGen) {
+      ArrAccessV = arrLenGEP;
+    }
+    else {
+      ArrAccessV = irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), arrLenGEP);
+    }
+    irBuilder.CreateStore(ArrLenV, ElemV);
+
+    Value *BodyV = getBody()->codegen();
+    if (BodyV == nullptr) {
+      throw InternalError("failed to generate bitcode for the loop body"); // LCOV_EXCL_LINE
+    }
+    Value* tmp = irBuilder.CreateAdd(CounterV, StepV, "steptmp");
+    irBuilder.CreateStore(tmp, CounterV);
+    irBuilder.CreateBr(HeaderBB);
+  }
 
   // Emit loop exit block.
   irBuilder.SetInsertPoint(ExitBB);
@@ -1519,10 +1500,17 @@ llvm::Value *ASTUnaryExpr::codegen() {
     return irBuilder.CreateNot(R, "lognegtmp");
     // Array Length Operator
   } else if (getOp() == "#") {
-    Value* arr = getExpr()->codegen();
-    Value* gep = irBuilder.CreateGEP(Type::getInt64Ty(llvmContext), arr, zeroV);
-    if (lValueGen) return gep;
-    else return irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), gep);
+    lValueGen = true;
+    llvm::Value *array = getExpr()->codegen();
+    lValueGen = false;
+    // Load addr of array from its memory home
+    Value *arrayAddr = irBuilder.CreateIntToPtr(array, Type::getInt64PtrTy(llvmContext), "arrayAddr");
+
+    // Assuming 'array' is a pointer to the start of the array where the first element is the length
+    llvm::Value *arrayLength = irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), arrayAddr, "arrayLength");
+
+    return arrayLength;
+
   } else {
     throw InternalError("Invalid unary operator: " + OP);
   }
