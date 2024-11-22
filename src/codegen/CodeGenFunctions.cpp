@@ -1468,6 +1468,8 @@ llvm::Value *ASTForRangeStmt::codegen() {
     // Generate the loop body
     irBuilder.SetInsertPoint(loopBody);
 
+    irBuilder.CreateStore(currentIndex, elementVar);
+
 
     llvm::Value *bodyVal = BODY->codegen();
     if (!bodyVal) {
