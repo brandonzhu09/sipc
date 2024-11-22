@@ -1352,54 +1352,54 @@ llvm::Value *ASTForStmt::codegen() {
 
   Value *ArrayPtr = irBuilder.CreateIntToPtr(iterVal, Type::getInt64PtrTy(llvmContext), "ArrayPtr");
 
-    // Define basic blocks for the loop
-    llvm::BasicBlock *loopHeader = llvm::BasicBlock::Create(llvmContext, "loopHeader", parentFunction);
-    llvm::BasicBlock *loopBody = llvm::BasicBlock::Create(llvmContext, "loopBody", parentFunction);
-    llvm::BasicBlock *loopExit = llvm::BasicBlock::Create(llvmContext, "loopExit", parentFunction);
+  // Define basic blocks for the loop
+  llvm::BasicBlock *loopHeader = llvm::BasicBlock::Create(llvmContext, "loopHeader", parentFunction);
+  llvm::BasicBlock *loopBody = llvm::BasicBlock::Create(llvmContext, "loopBody", parentFunction);
+  llvm::BasicBlock *loopExit = llvm::BasicBlock::Create(llvmContext, "loopExit", parentFunction);
 
 
   llvm::Value *currentIndexStack = CreateEntryBlockAlloca(parentFunction, "currentIndexStack");
   irBuilder.CreateStore(oneV, currentIndexStack);
 
-    // Create a branch to the loop header
-    irBuilder.CreateBr(loopHeader);
-    // Generate the loop header
-    irBuilder.SetInsertPoint(loopHeader);
+  // Create a branch to the loop header
+  irBuilder.CreateBr(loopHeader);
+  // Generate the loop header
+  irBuilder.SetInsertPoint(loopHeader);
 
-    // Get the array size (stored at the start of the array)
-    llvm::Value *arraySize = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), iterVal, "arraySize");
+  // Get the array size (stored at the start of the array)
+  llvm::Value *arraySize = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), iterVal, "arraySize");
 
-    llvm::Value *currentIndex = irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), currentIndexStack, "currentIndex");
-    // Compare current index with array size to check if we can continue iterating
-    llvm::Value *cond = irBuilder.CreateICmpSLE(currentIndex, arraySize, "loopCond");
-    irBuilder.CreateCondBr(cond, loopBody, loopExit);
+  llvm::Value *currentIndex = irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), currentIndexStack, "currentIndex");
+  // Compare current index with array size to check if we can continue iterating
+  llvm::Value *cond = irBuilder.CreateICmpSLE(currentIndex, arraySize, "loopCond");
+  irBuilder.CreateCondBr(cond, loopBody, loopExit);
 
-    // Generate the loop body
-    irBuilder.SetInsertPoint(loopBody);
+  // Generate the loop body
+  irBuilder.SetInsertPoint(loopBody);
 
-    // Fetch the current element from the array (after the size)
+  // Fetch the current element from the array (after the size)
   Value *ElemPtr = irBuilder.CreateGEP(Type::getInt64Ty(llvmContext), ArrayPtr, {currentIndex}, "ElemPtr");
   Value *LoadElement = irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), ElemPtr, "LoadElement");
   irBuilder.CreateStore(LoadElement, elementVar);
 
-    // Codegen the body of the loop
-    llvm::Value *bodyVal = BODY->codegen();
-    if (!bodyVal) {
-        throw InternalError("Failed to generate bitcode for the loop body in ASTForStmt");
-    }
+  // Codegen the body of the loop
+  llvm::Value *bodyVal = BODY->codegen();
+  if (!bodyVal) {
+      throw InternalError("Failed to generate bitcode for the loop body in ASTForStmt");
+  }
 
-    // Increment the current index (move to the next element in the array)
-    llvm::Value *nextIndex = irBuilder.CreateAdd(currentIndex, llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1), "nextIndex");
-    irBuilder.CreateStore(nextIndex, currentIndexStack);
+  // Increment the current index (move to the next element in the array)
+  llvm::Value *nextIndex = irBuilder.CreateAdd(currentIndex, llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1), "nextIndex");
+  irBuilder.CreateStore(nextIndex, currentIndexStack);
 
-    // Branch back to the loop header
-    irBuilder.CreateBr(loopHeader);
+  // Branch back to the loop header
+  irBuilder.CreateBr(loopHeader);
 
-    // Generate the loop exit
-    irBuilder.SetInsertPoint(loopExit);
+  // Generate the loop exit
+  irBuilder.SetInsertPoint(loopExit);
 
-    // Return a nop instruction
-    return irBuilder.CreateCall(nop);
+  // Return a nop instruction
+  return irBuilder.CreateCall(nop);
 }
 
 /*
@@ -1441,15 +1441,15 @@ llvm::Value *ASTForRangeStmt::codegen() {
         incrementVal = llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1, "defaultInc");
     }
 
-  lValueGen = true;
-  llvm::Value *elementVar = ELEMENT->codegen();
-  lValueGen = false;
-  if (!elementVar) {
-    throw InternalError("Failed to generate bitcode for loop element in ASTForStmt");
-  }
+    lValueGen = true;
+    llvm::Value *elementVar = ELEMENT->codegen();
+    lValueGen = false;
+    if (!elementVar) {
+      throw InternalError("Failed to generate bitcode for loop element in ASTForStmt");
+    }
 
-  llvm::Value *currentIndexStack = CreateEntryBlockAlloca(parentFunction, "currentIndexStack");
-  irBuilder.CreateStore(oneV, currentIndexStack);
+    llvm::Value *currentIndexStack = CreateEntryBlockAlloca(parentFunction, "currentIndexStack");
+    irBuilder.CreateStore(oneV, currentIndexStack);
 
     // Create basic blocks for the loop
     llvm::BasicBlock *loopHeader = llvm::BasicBlock::Create(llvmContext, "loopHeader", parentFunction);
@@ -1510,7 +1510,7 @@ llvm::Value *ASTUnaryExpr::codegen() {
     // Load addr of array from its memory home
     Value *arrayAddr = irBuilder.CreateIntToPtr(array, Type::getInt64PtrTy(llvmContext), "arrayAddr");
 
-    // Assuming 'array' is a pointer to the start of the array where the first element is the length
+    // Load 'arrayAddr' where the first element is the length
     llvm::Value *arrayLength = irBuilder.CreateLoad(Type::getInt64Ty(llvmContext), arrayAddr, "arrayLength");
 
     return arrayLength;
