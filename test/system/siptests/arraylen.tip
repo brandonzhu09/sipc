@@ -3,5 +3,8 @@ main() {
     x = [1,8,4,2];
     y = [10 of true];
 
-    if (#x != 4) error 0;
+    if (#x != 4) error 333;
+    if (#y != 10) error 44444;
+
+    return 0;
 }

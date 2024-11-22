@@ -360,8 +360,6 @@ void TypeConstraintVisitor::endVisit(ASTArrayOfExpr *element) {
     auto intType = std::make_shared<TipInt>();
     auto elementType = astToVar(element->getElement());
 
-    std::cout << *elementType << std::endl;
-
     constraintHandler->handle(astToVar(element), std::make_shared<TipArr>(elementType));
     constraintHandler->handle(astToVar(element->getFrequency()), intType);
 }
