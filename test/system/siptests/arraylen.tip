@@ -1,10 +1,15 @@
 main() {
-    var x,y;
+    var x,y,z;
     x = [1,8,4,2];
     y = [10 of true];
+    z = [3 of [4 of 2]];
 
     if (#x != 4) error 333;
     if (#y != 10) error 44444;
+    if (#z != 3) error 3;
+
+    if (z[0][0] != 2) error 4;
+
 
     return 0;
 }
