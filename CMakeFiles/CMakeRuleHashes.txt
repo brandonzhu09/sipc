@@ -1,2 +1,0 @@
-# Hashes of file build rules.
-539de5fceb493f0393a3e560e541ae7b src/frontend/antlr4cpp_generated_src/TIP/TIPLexer.interp
