@@ -1,12 +1,21 @@
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh --dce optimization_tests/dce.tip
+// jnt6mq@portal05:~/sipc-brandon_zhu$ time ./dce 10000000
+// Program output: 10000000
+
+// real    0m0.036s
+// user    0m0.036s
+// sys     0m0.000s
+
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh --do optimization_tests/dce.tip
+// jnt6mq@portal05:~/sipc-brandon_zhu$ time ./dce 10000000
+// Program output: 10000000
+
+// real    0m0.043s
+// user    0m0.043s
+// sys     0m0.000s
 // Enhanced Test for Dead Code Elimination (DCE)
 main(n) {
   var a, b, c, d, e, f, g, h;
-  var unused1, unused2, unused3;
-
-  // Initialized but never used variables
-  unused1 = 10;
-  unused2 = 20;
-  unused3 = 30;
 
   // Additional unused loop
   a = 0;
@@ -15,23 +24,9 @@ main(n) {
     a = a + b; // This computation is unused
     c = a - b; // Unused computation
     d = a * b; // Unused computation
-    e = a % b; // Unused computation
-    f = c * d; // Unused computation
-    g = d / e; // Unused computation, potential division by zero
-    h = f + g; // Unused computation
-
-    // Unused conditional block
-    if (b % 2 == 0) {
-      unused1 = unused1 + b;
-    } else {
-      unused2 = unused2 * b;
-    }
 
     b++;
   }
-
-  // Unused final computations
-  unused3 = unused1 + unused2;
 
   // Return value that is independent of all the unused computations
   return b;

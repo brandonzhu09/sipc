@@ -1,0 +1,40 @@
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh --mfp optimization_tests/mfp.tip
+// jnt6mq@portal05:~/sipc-brandon_zhu$ time ./mfp 10000000
+// Program output: 0
+
+// real    0m0.088s
+// user    0m0.083s
+// sys     0m0.004s
+
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh --do optimization_tests/mfp.tip
+// jnt6mq@portal05:~/sipc-brandon_zhu$ time ./mfp 10000000
+// Program output: 0
+
+// real    0m0.093s
+// user    0m0.084s
+// sys     0m0.008s
+
+foo(n) {
+    var x, i;
+    x = 0;
+    for (i : 1 .. n) {
+        x = (x + i) * x;
+    }
+    return x;
+}
+
+bar(n) {
+    var x, i;
+    x = 0;
+    for (i : 1 .. n) {
+        x = (x + i) * x;
+    }
+    return x;
+}
+
+main(n) {
+    var f, b;
+    f = foo(n);
+    b = bar(n);
+    return 0;
+}

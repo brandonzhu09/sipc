@@ -1,0 +1,37 @@
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh --ecse optimization_tests/ecse.tip
+// jnt6mq@portal05:~/sipc-brandon_zhu$ time ./ecse 10000000
+// Program output: 500000050000000
+
+// real    0m0.047s
+// user    0m0.043s
+// sys     0m0.005s
+
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh --do optimization_tests/ecse.tip
+// jnt6mq@portal05:~/sipc-brandon_zhu$ time ./ecse 10000000
+// Program output: 500000050000000
+
+// real    0m0.059s
+// user    0m0.057s
+// sys     0m0.001s
+
+// Test for Early Common Subexpression Elimination with a While Loop
+main(n) {
+  var a, b, c, d, e, f, g, i, result;
+  i = 0;
+  result = 0;
+
+  while (i < n) {
+    a = i * 5;  // Compute i*5
+    b = a + 10; // Use the result of i*5
+    c = i * 5;  // Common subexpression, can be eliminated and replaced with 'a'
+    d = i * 5;
+    e = i * 5;
+    f = i * 5;
+    g = i * 5;
+    result = result + b + c;
+
+    i = i + 1;
+  }
+
+  return result;
+}

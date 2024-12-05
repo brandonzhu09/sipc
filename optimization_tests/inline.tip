@@ -1,0 +1,30 @@
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh --ilp optimization_tests/inline.tip
+// jnt6mq@portal05:~/sipc-brandon_zhu$ time ./inline
+// Program output: 0
+
+// real    0m0.013s
+// user    0m0.004s
+// sys     0m0.009s
+
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh --do optimization_tests/inline.tip
+// jnt6mq@portal05:~/sipc-brandon_zhu$ time ./inline
+// Program output: 0
+
+// real    0m0.024s
+// user    0m0.013s
+// sys     0m0.009s
+
+multiplyByTwo(x) {
+    return x * 2;
+}
+
+main() {
+    var i, result;
+    result = [1000000 of 0];
+
+    for (i : 0 .. 1000000) {
+        result[i] = multiplyByTwo(i); // Expected to be inlined
+    }
+
+    return 0;
+}
