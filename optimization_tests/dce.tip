@@ -1,0 +1,38 @@
+// Enhanced Test for Dead Code Elimination (DCE)
+main(n) {
+  var a, b, c, d, e, f, g, h;
+  var unused1, unused2, unused3;
+
+  // Initialized but never used variables
+  unused1 = 10;
+  unused2 = 20;
+  unused3 = 30;
+
+  // Additional unused loop
+  a = 0;
+  b = 0;
+  while (b < n) {
+    a = a + b; // This computation is unused
+    c = a - b; // Unused computation
+    d = a * b; // Unused computation
+    e = a % b; // Unused computation
+    f = c * d; // Unused computation
+    g = d / e; // Unused computation, potential division by zero
+    h = f + g; // Unused computation
+
+    // Unused conditional block
+    if (b % 2 == 0) {
+      unused1 = unused1 + b;
+    } else {
+      unused2 = unused2 * b;
+    }
+
+    b++;
+  }
+
+  // Unused final computations
+  unused3 = unused1 + unused2;
+
+  // Return value that is independent of all the unused computations
+  return b;
+}
