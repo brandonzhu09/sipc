@@ -98,6 +98,7 @@ void Optimizer::optimize(llvm::Module *theModule, llvm::cl::list<Optimization> &
     functionPassManager.addPass(llvm::ADCEPass());
   }
 
+  // Sparse Conditional Constant Propagation
   if (contains(sccp, enabledOpts)) {
     modulePassManager.addPass(llvm::IPSCCPPass());
   }
