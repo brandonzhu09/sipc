@@ -1,13 +1,13 @@
-// jnt6mq@portal01:~/sipc-brandon_zhu$ ./bin/build.sh optimization_tests/sccp.tip
-// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./sccp
+// jnt6mq@portal01:~/sipc-brandon_zhu$ ./bin/build.sh optimization_tests/inline.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./inline
 // Program output: 10000
 
 // real    0m1.107s
 // user    0m1.102s
 // sys     0m0.005s
 
-// jnt6mq@portal01:~/sipc-brandon_zhu$ ./bin/build.sh --ilp --sccp --dce optimization_tests/sccp.tip
-// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./sccp
+// jnt6mq@portal01:~/sipc-brandon_zhu$ ./bin/build.sh --ilp --sccp --dce optimization_tests/inline.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./inline
 // Program output: 10000
 
 // real    0m0.386s
