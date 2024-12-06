@@ -6,29 +6,44 @@
 #include "llvm/Transforms/Scalar/GVN.h"
 #include "llvm/Transforms/Scalar/Reassociate.h"
 #include "llvm/Transforms/Scalar/SimplifyCFG.h"
+#include "llvm/Transforms/Scalar/Sink.h"
+
 #include "llvm/Transforms/Utils/Mem2Reg.h"
 
 #include "loguru.hpp"
+
+#include <iostream>
 
 // P5 passes
 #include "llvm/Transforms/Scalar/LICM.h"
 
 // New optimizations
+#include "llvm/Transforms/Scalar/SimpleLoopUnswitch.h"
+#include "llvm/Transforms/Utils/LoopSimplify.h"
 #include "llvm/Transforms/Scalar/LoopUnrollPass.h"
+#include "llvm/Transforms/Scalar/TailRecursionElimination.h"
+
 #include "llvm/Transforms/IPO/MergeFunctions.h"
-#include "llvm/Transforms/Scalar/DCE.h"
+#include "llvm/Transforms/Scalar/ADCE.h"
 #include "llvm/Transforms/Scalar/EarlyCSE.h"
 #include "llvm/Transforms/IPO/Inliner.h"
+#include "llvm/Transforms/IPO/SCCP.h"
+#include "llvm/Transforms/Scalar/IndVarSimplify.h"
 
+#include "llvm/Transforms/Scalar/DeadStoreElimination.h"
+#include "llvm/Transforms/IPO/GlobalDCE.h"
+
+#include "llvm/Transforms/IPO/DeadArgumentElimination.h"
+#include "llvm/Transforms/Scalar/LICM.h"
 
 namespace { // Anonymous namespace for local function
 
-    bool contains(Optimization o, llvm::cl::list<Optimization> &l) {
-        for (unsigned i = 0; i != l.size(); ++i) {
-            if (o == l[i]) return true;
-        }
-        return false;
-    }
+bool contains(Optimization o, llvm::cl::list<Optimization> &l) {
+  for (unsigned i = 0; i != l.size(); ++i) {
+    if (o == l[i]) return true;
+  }
+  return false;
+}
 
 }
 
@@ -58,13 +73,15 @@ void Optimizer::optimize(llvm::Module *theModule, llvm::cl::list<Optimization> &
   // Initiating Function and Module level PassManagers
   llvm::ModulePassManager modulePassManager;
   llvm::FunctionPassManager functionPassManager;
+  llvm::LoopPassManager loopPassManager;
+
+  llvm::LICMOptions options;
 
   // Adding passes to the pipeline
 
   // Constructs SSA and is a pre-requisite for many other passes
   functionPassManager.addPass(llvm::PromotePass());
 
-  // Instruction combine pass scans for a variety of patterns and replaces bitcodes matched with improvements.
   functionPassManager.addPass(llvm::InstCombinePass());
 
   // Reassociate expressions.
@@ -76,31 +93,34 @@ void Optimizer::optimize(llvm::Module *theModule, llvm::cl::list<Optimization> &
   // Simplify the control flow graph (deleting unreachable blocks, etc).
   functionPassManager.addPass(llvm::SimplifyCFGPass());
 
-  // Dead Code Elimination (DCE): Removes code that does not affect the program's observable behavior.
+  // (Aggressive) Dead Code Elimination (ADCE): Removes code that does not affect the program's observable behavior.
   if (contains(dce, enabledOpts)) {
-      functionPassManager.addPass(llvm::DCEPass());
+    functionPassManager.addPass(llvm::ADCEPass());
+  }
+
+  if (contains(sccp, enabledOpts)) {
+    modulePassManager.addPass(llvm::IPSCCPPass());
   }
 
   // Loop Unrolling: Expands the loop body multiple times,
   // reducing the loop overhead and increasing parallelism.
   if (contains(lu, enabledOpts)) {
-      functionPassManager.addPass(llvm::LoopUnrollPass());
+    loopPassManager.addPass(llvm::LICMPass(options));
+    functionPassManager.addPass(llvm::LoopUnrollPass());
+//    functionPassManager.addPass(llvm::GVNSinkPass());
+//
+//    functionPassManager.addPass(llvm::SinkingPass());
   }
 
-  // Merge function Pass
-  if (contains(mfp, enabledOpts)){
-      modulePassManager.addPass(llvm::MergeFunctionsPass());
+  // Tail Call Elimination Pass
+  if (contains(tce, enabledOpts)) {
+    loopPassManager.addPass(llvm::LICMPass(options));
+    functionPassManager.addPass(llvm::TailCallElimPass());
   }
 
   // Inline pass
-  if (contains(ilp, enabledOpts)){
-      modulePassManager.addPass(llvm::ModuleInlinerPass());
-  }
-
-  // Early Common Subexpression Elimination (EarlyCSE):
-  // Identifies and eliminates redundant computations performed multiple times within the same block.
-  if (contains(ecse, enabledOpts)) {
-      functionPassManager.addPass(llvm::EarlyCSEPass());
+  if (contains(ilp, enabledOpts)) {
+    modulePassManager.addPass(llvm::ModuleInlinerPass());
   }
 
   // Passing the function pass manager to the modulePassManager using a function

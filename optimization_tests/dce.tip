@@ -1,33 +1,30 @@
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh optimization_tests/dce.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./dce
+// Program output: 10000000
+
+// real    0m0.293s
+// user    0m0.280s
+// sys     0m0.012s
+
 // jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh --dce optimization_tests/dce.tip
-// jnt6mq@portal05:~/sipc-brandon_zhu$ time ./dce 10000000
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./dce
 // Program output: 10000000
 
-// real    0m0.036s
-// user    0m0.036s
+// real    0m0.051s
+// user    0m0.051s
 // sys     0m0.000s
 
-// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh --do optimization_tests/dce.tip
-// jnt6mq@portal05:~/sipc-brandon_zhu$ time ./dce 10000000
-// Program output: 10000000
-
-// real    0m0.043s
-// user    0m0.043s
-// sys     0m0.000s
 // Enhanced Test for Dead Code Elimination (DCE)
-main(n) {
-  var a, b, c, d, e, f, g, h;
+main() {
 
-  // Additional unused loop
-  a = 0;
-  b = 0;
-  while (b < n) {
-    a = a + b; // This computation is unused
-    c = a - b; // Unused computation
-    d = a * b; // Unused computation
+    var a, b, c;
+    a = 1; b = 1; c = 1;
 
-    b++;
-  }
+    while(a < 10000000) {
+        c = ((a * b) + (a / b)) * (b - a * 2) - ((a  * 27) % c) + 1;
+        a++;
+        b++;
+    }
 
-  // Return value that is independent of all the unused computations
-  return b;
+    return b;
 }

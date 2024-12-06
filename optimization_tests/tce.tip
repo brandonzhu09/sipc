@@ -1,0 +1,35 @@
+// jnt6mq@portal01:~/sipc-brandon_zhu$ ./bin/build.sh optimization_tests/tce.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./tce 1000000
+// Segmentation fault
+
+// real    0m0.008s
+// user    0m0.004s
+// sys     0m0.004s
+
+// jnt6mq@portal01:~/sipc-brandon_zhu$ ./bin/build.sh --tce  optimization_tests/tce.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./tce 1000000
+// Program output: 0
+
+// real    0m0.009s
+// user    0m0.005s
+// sys     0m0.004s
+
+main(n) {
+    return rec(n, 1);
+}
+
+
+rec(x, y) {
+    var out;
+
+    out = 0;
+
+    if(x == 0) {
+        out = y;
+    } else {
+        out = rec(x - 1, y * x);
+    }
+
+    return out;
+
+}

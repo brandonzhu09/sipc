@@ -6,13 +6,13 @@
 // user    0m1.102s
 // sys     0m0.005s
 
-// jnt6mq@portal01:~/sipc-brandon_zhu$ ./bin/build.sh --ilp --sccp --dce optimization_tests/sccp.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ ./bin/build.sh --sccp --dce --ilp optimization_tests/sccp.tip
 // jnt6mq@portal01:~/sipc-brandon_zhu$ time ./sccp
 // Program output: 10000
 
-// real    0m0.386s
-// user    0m0.386s
-// sys     0m0.000s
+// real    0m0.414s
+// user    0m0.410s
+// sys     0m0.004s
 
 main() {
 

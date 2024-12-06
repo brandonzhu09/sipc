@@ -58,9 +58,9 @@ static cl::list<Optimization> OptimizationList(
     cl::values(
       clEnumVal(dce, "Dead Code Elimination"),
       clEnumVal(lu, "Loop Unrolling"),
-      clEnumVal(mfp, "Merge Function Pass"),
       clEnumVal(ilp, "Inline Optimization"),
-      clEnumVal(ecse, "Early Common Subexpression Elimination")
+      clEnumVal(sccp, "Sparse Conditional Constant Propagation"),
+      clEnumVal(tce, "Tail Call Elimination")
       ),
     cl::cat(TIPcat));
 
