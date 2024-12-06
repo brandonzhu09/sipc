@@ -3,6 +3,8 @@ Finding which optimizations to choose was influenced by how effectively it can b
 
 I had to experiment with the input size a lot when executing optimized and non-optimized programs to find a considerable difference in runtime between the two programs. In order to do that, I needed to make sure that the TIP program also needs to scale in time complexity with the input size so the runtimes are not negligible for optimized and non-optimized programs.
 
+Note: Programs for optimization testing can be found in the `optimization_tests` folder.
+
 ## Dead Code Elimination (DCE)
 ### Description
 Dead Code Elimination (DCE) is a crucial optimization for simplifying programs by removing computations and instructions that have no impact on the program's observable behavior, such as its outputs or side effects. My reasons for selecting DCE involves its ability to:
