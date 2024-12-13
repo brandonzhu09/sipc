@@ -1,0 +1,44 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"_deps/antlr-src/runtime/Cpp/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 211,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "share/doc/libantlr4",
+			"paths" : 
+			[
+				"_deps/antlr-src/runtime/Cpp/README.md",
+				"_deps/antlr-src/runtime/Cpp/VERSION"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "_deps/antlr-build",
+		"source" : "_deps/antlr-src/runtime/Cpp"
+	}
+}

@@ -1,0 +1,52 @@
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh optimization_tests/lu.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./lu 10000
+// Program output: -1392480216880000
+
+// real    0m2.206s
+// user    0m2.206s
+// sys     0m0.001s
+
+// jnt6mq@portal01:~/sipc-brandon_zhu$ ./bin/build.sh --sccp --ilp --lu optimization_tests/lu.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./lu 10000
+// Program output: -1392480216880000
+
+// real    0m0.802s
+// user    0m0.797s
+// sys     0m0.004s
+
+// Test for Loop Unrolling
+main(n) {
+  var a, b, c, d, e, f, g, i, result;
+  i = 0;
+  result = 0;
+  g = 32;
+
+  while (i < n) {
+    a = 3 * genValue(3000000) + a;
+    d = 3 * genValue(3000000) + d;
+
+    a++;
+    d++;
+
+    result = a + d;
+
+    i = i + 1;
+  }
+
+  return result;
+}
+
+genValue(x) {
+
+    var i;
+    var z;
+    i = 0;
+    z = 0;
+    while ((i * i) / 20 < x) {
+        z = z + i - x;
+        i++;
+    }
+
+    return z;
+
+}

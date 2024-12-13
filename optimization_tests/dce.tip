@@ -1,0 +1,30 @@
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh optimization_tests/dce.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./dce
+// Program output: 10000000
+
+// real    0m0.293s
+// user    0m0.280s
+// sys     0m0.012s
+
+// jnt6mq@portal05:~/sipc-brandon_zhu$ ./bin/build.sh --dce optimization_tests/dce.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./dce
+// Program output: 10000000
+
+// real    0m0.051s
+// user    0m0.051s
+// sys     0m0.000s
+
+// Enhanced Test for Dead Code Elimination (DCE)
+main() {
+
+    var a, b, c;
+    a = 1; b = 1; c = 1;
+
+    while(a < 10000000) {
+        c = ((a * b) + (a / b)) * (b - a * 2) - ((a  * 27) % c) + 1;
+        a++;
+        b++;
+    }
+
+    return b;
+}

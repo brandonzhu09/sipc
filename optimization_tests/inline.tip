@@ -1,0 +1,45 @@
+// jnt6mq@portal01:~/sipc-brandon_zhu$ ./bin/build.sh optimization_tests/inline.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./inline
+// Program output: 10000
+
+// real    0m1.107s
+// user    0m1.102s
+// sys     0m0.005s
+
+// jnt6mq@portal01:~/sipc-brandon_zhu$ ./bin/build.sh --ilp --sccp --dce optimization_tests/inline.tip
+// jnt6mq@portal01:~/sipc-brandon_zhu$ time ./inline
+// Program output: 10000
+
+// real    0m0.386s
+// user    0m0.386s
+// sys     0m0.000s
+
+main() {
+
+    var a, b, c;
+    a = 1; b = 1; c = 0;
+
+    while(a < 10000) {
+
+        c = genValue(3000000) + c;
+        a++;
+        b++;
+    }
+
+    return b;
+}
+
+genValue(x) {
+
+    var i;
+    var z;
+    i = 0;
+    z = 0;
+    while ((i * i) / 20 < x) {
+        z = z + i - x;
+        i++;
+    }
+
+    return z;
+
+}
